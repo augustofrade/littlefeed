@@ -7,7 +7,7 @@ public class Newsletter : Entity
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
-    public List<Article> Articles { get; private init; } = [];
+    public ICollection<Article> Articles { get; private init; } = [];
 
     private Newsletter() { }
 

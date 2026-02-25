@@ -5,7 +5,7 @@ namespace LittleFeed.Domain;
 
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public required DbSet<Newsletter> Newsletter { get; set; }
+    public required DbSet<Newsletter> Newsletters { get; set; }
     public required DbSet<Article> Articles { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -33,6 +33,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Newsletter>()
             .Property(n => n.Description)
             .HasMaxLength(100);
+        builder.Entity<Newsletter>()
+            .HasMany<Article>(n => n.Articles)
+            .WithOne(a => a.Newsletter)
+            .HasForeignKey(a => a.NewsletterId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Article
         builder.Entity<Article>()
