@@ -1,0 +1,23 @@
+@page
+@model LittleFeed.Areas.Newsletter.Pages.New
+
+@{
+    Layout = "_Layout";
+}
+
+<form method="post" class="form">
+    <div class="mb-4">
+        
+    <div class="mb-3">
+        <label asp-for="Input!.Name" class="mb-2">Name</label>
+        <input asp-for="Input!.Name" class="form-control"/>
+    </div>
+    <div>
+        <label asp-for="Input!.Description" class="mb-2">Description</label>
+        <textarea asp-for="Input!.Description" class="form-control"></textarea>
+    </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <input class="btn btn-primary" type="submit" value="Create"/>
+    </div>
+</form>

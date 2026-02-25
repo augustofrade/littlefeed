@@ -1,0 +1,17 @@
+@page
+@model LittleFeed.Pages.Index
+
+@{
+    Layout = "_Layout";
+}
+
+<ul>
+    @foreach (var newsletter in Model.NewsletterList)
+    {
+        <li class="row">
+            <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug">
+                <div class="col">@newsletter.Name</div>
+            </a>
+        </li>
+    }
+</ul>

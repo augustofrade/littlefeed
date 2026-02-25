@@ -1,0 +1,18 @@
+@page "/Newsletter/n/{slug}"
+@model LittleFeed.Areas.Newsletter.Pages.Details
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="mb-5">  
+    <h1>@Model.Newsletter.Name</h1>
+    <span class="d-flex gap-2 text-muted">
+        <span>[@Model.Newsletter.Slug]</span>
+        <span>Created at @Model.Newsletter.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'at' HH:mm")</span>
+    </span>
+</div>
+
+<div>
+    @Model.Newsletter.Description
+</div>
