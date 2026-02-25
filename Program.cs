@@ -1,4 +1,5 @@
 using LittleFeed.Domain;
+using LittleFeed.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,9 @@ builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Logging.AddConsole();
+builder.Services.AddScoped<INewsletterService, NewsletterService>();
 
 var app = builder.Build();
 
