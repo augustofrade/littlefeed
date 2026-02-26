@@ -32,7 +32,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .IsRequired();
         builder.Entity<Newsletter>()
             .Property(n => n.Description)
-            .HasMaxLength(100);
+            .HasMaxLength(255);
         builder.Entity<Newsletter>()
             .HasMany<Article>(n => n.Articles)
             .WithOne(a => a.Newsletter)
