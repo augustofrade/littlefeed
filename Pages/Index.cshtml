@@ -5,13 +5,31 @@
     Layout = "_Layout";
 }
 
-<ul>
-    @foreach (var newsletter in Model.NewsletterList)
-    {
-        <li class="row">
-            <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug">
-                <div class="col">@newsletter.Name</div>
-            </a>
-        </li>
+<ul style="list-style: none;">
+    @{
+        var count = Model.NewsletterList.Count;
+        for(var index = 0; index < count; index++)
+        {
+            <li>
+                @{
+                    var newsletter = Model.NewsletterList.ElementAt(index);
+                }
+                <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 newsletter-list-item">
+                    <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
+                    <div class="d-flex align-items-center gap-4">
+                        <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
+                        <span class="badge bg-primary">Category</span>
+                    </div>
+                </a>
+            </li>
+        }
     }
 </ul>
+
+@section Styles {
+    <style>
+    .newsletter-list-item:hover {
+        background-color: #eee;
+    }
+    </style>
+}

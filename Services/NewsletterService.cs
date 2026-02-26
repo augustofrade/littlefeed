@@ -22,7 +22,7 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
     {
         logger.LogInformation("Listing newsletters");
         return dbContext.Newsletters
-            .Select(n => new ListNewsletterDto(n.Name, n.Slug, n.Description))
+            .Select(n => new ListNewsletterDto(n.Name, n.Slug, n.Description, n.CreatedAt))
             .ToListAsync();
     }
     
