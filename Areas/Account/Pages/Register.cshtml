@@ -1,14 +1,14 @@
 @page
-@model LittleFeed.Pages.Signup
+@model LittleFeed.Areas.Account.Pages.Register
 
 @{
     Layout = "_Layout";
 }
 
 <div class="d-flex h-100 w-100 align-items-center justify-content-center">
-    <form action="" class="card" id="form" hx-post="@Url.Page("/Signup")" hx-target="#form" hx-swap="outerHTML">
+    <form action="" class="card" id="form" hx-post="@Url.Page("/Register")" hx-target="#form" hx-swap="outerHTML">
         <div class="card-body p-5">
-            <h1 class="text-center text-uppercase mb-4 fw-bold">Signup</h1>
+            <h1 class="text-center text-uppercase mb-4 fw-bold">Register</h1>
             <div class="mb-3">
                 <label asp-for="Input.Email" class="form-label">E-mail</label>
                 <input type="email" asp-for="Input.Email" class="form-control">
