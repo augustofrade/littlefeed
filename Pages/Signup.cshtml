@@ -1,0 +1,26 @@
+@page
+@model LittleFeed.Pages.Signup
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="d-flex h-100 w-100 align-items-center justify-content-center">
+    <form action="" class="card" id="form" hx-post="@Url.Page("/Signup")" hx-target="#form" hx-swap="outerHTML">
+        <div class="card-body p-5">
+            <h1 class="text-center text-uppercase mb-4 fw-bold">Signup</h1>
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">E-mail</label>
+                <input type="email" asp-for="Input.Email" class="form-control">
+            </div>
+            <div class="mb-5">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input type="password" asp-for="Input.Password" class="form-control">
+            </div>
+
+            @Html.AntiForgeryToken()
+            
+            <input type="submit" class="btn btn-primary w-100" value="Create Account">
+        </div>
+    </form>
+</div>
