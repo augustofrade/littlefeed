@@ -22,9 +22,12 @@ public class Login(IAccountService accountService) : PageModel
     [BindProperty]
     public LoginDto Input { get; set; }
     
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+    
     public void OnGet()
     {
-        
+        ReturnUrl ??= Url.Content("~/");
     }
     
     public async Task<IActionResult> OnPostAsync()
@@ -38,7 +41,7 @@ public class Login(IAccountService accountService) : PageModel
         if(!result.Succeeded)
             return LoginError(result);
 
-        Response.Headers["HX-Redirect"] = Url.Content("~/");
+        Response.Headers["HX-Redirect"] = Url.Content(ReturnUrl);
         return new EmptyResult();
     }
 

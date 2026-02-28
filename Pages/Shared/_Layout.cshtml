@@ -22,15 +22,26 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Featured</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                     </ul>
                     <div class="d-flex gap-2">
-                        <a class="btn btn-primary" pasp-area="Account" asp-page="Login">Login</a>
-                        <a class="btn btn-outline-primary" asp-area="Account" asp-page="Register">Create Account</a>
+                        @if (User.Identity is { IsAuthenticated: false })
+                        {
+                            <a class="btn btn-primary btn-sm" asp-area="Account" asp-page="Login">Login</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-area="Account" asp-page="Register">Create Account</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary btn-sm" asp-area="Account" asp-page="Index">Account</a>
+                            <form hx-post="@Url.Content("/Account/Logout")">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-light btn-sm">Logout</button>
+                            </form>
+                        }
                     </div>
                 </div>
             </div>

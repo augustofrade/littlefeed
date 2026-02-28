@@ -6,7 +6,7 @@ namespace LittleFeed.Infrastructure;
 
 public sealed class AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : IAccountService
 {
-    private const bool IsAuthPersistent = false;
+    private const bool IsAuthPersistent = true;
     
     public async Task<RegisterResult> RegisterAsync(string email, string password)
     {
@@ -44,5 +44,10 @@ public sealed class AccountService(UserManager<ApplicationUser> userManager, Sig
         return !signinResult.Succeeded
             ? LoginResult.InvalidCredentials()
             : LoginResult.Success();
+    }
+
+    public Task SignOutAsync()
+    {
+        return  signInManager.SignOutAsync();
     }
 }

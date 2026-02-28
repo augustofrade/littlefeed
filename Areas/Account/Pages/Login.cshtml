@@ -19,6 +19,7 @@
             </div>
 
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
             
             <input type="submit" class="btn btn-primary w-100" value="Login">
         </div>
