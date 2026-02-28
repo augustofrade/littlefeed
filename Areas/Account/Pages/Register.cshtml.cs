@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using LittleFeed.Application.Accounts;
 using LittleFeed.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ public record CreateAccountDto
     public string Password { get; set; }
 }
 
-public class Register(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager) : PageModel
+public class Register(IAccountService accountService) : PageModel
 {
     [BindProperty]
     public CreateAccountDto Input { get; set; }
@@ -29,31 +30,21 @@ public class Register(SignInManager<ApplicationUser> signInManager, UserManager<
 
     public async Task<PartialViewResult> OnPostAsync()
     {
-        var newUser = ApplicationUser.CreateWithEmail(Input.Email);
-        var passwordValidation = await PasswordValidation.ValidateAsync(userManager, newUser, Input.Password);
-        if (!passwordValidation.Succeeded)
-        {
-            foreach(var passwordValidationError in passwordValidation.Errors)
-            {
-                ModelState.AddModelError(passwordValidationError.Code, passwordValidationError.Description);
-            }
-        }
-        
         if (!ModelState.IsValid)
         {
             var errors =  ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return RegisterError(errors);
+            return RegisterError(errors.ToList());
         }
         
-        var registerResult = await userManager.CreateAsync(newUser, Input.Password);
-        if (!registerResult.Succeeded)
-            return RegisterError(registerResult.Errors.Select(e => e.Description));
+        var registerResult = await accountService.RegisterAsync(Input.Email, Input.Password);
+        if(!registerResult.Succeeded)
+            return RegisterError(registerResult.Errors.ToList());
         
         return Partial("_RegisterSuccess");
     }
 
-    private PartialViewResult RegisterError(IEnumerable<string> errors)
+    private PartialViewResult RegisterError(List<string> errors)
     {
-        return Partial("_RegisterError", errors.ToList());
+        return Partial("_RegisterError", errors);
     }
 }
