@@ -1,9 +1,11 @@
 ﻿using LittleFeed.Domain.Newsletters;
+using LittleFeed.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleFeed.Domain;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 {
     public required DbSet<Newsletter> Newsletters { get; set; }
     public required DbSet<Article> Articles { get; set; }
