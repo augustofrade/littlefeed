@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
 {
     public required DbSet<Newsletter> Newsletters { get; set; }
     public required DbSet<Article> Articles { get; set; }
+    public required DbSet<UserProfile> UserProfiles { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
@@ -49,6 +50,16 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
         builder.Entity<Article>()
             .Property(a => a.Excerpt)
             .HasMaxLength(100);
+        
+        // UserProfile
+        builder.Entity<UserProfile>(b =>
+        {
+            b.HasOne<ApplicationUser>()
+                .WithOne()
+                .HasForeignKey<UserProfile>(u => u.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
