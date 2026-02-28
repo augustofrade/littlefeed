@@ -1,0 +1,27 @@
+@page
+@model LittleFeed.Areas.Account.Pages.Login
+
+@{
+    Layout = "_Layout";
+}
+
+<div>
+    <form method="post" class="card mb-5" hx-post="?" hx-target="#error-wrapper" >
+        <div class="card-body p-5">
+            <h1 class="text-center text-uppercase mb-4 fw-bold">Login</h1>
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">E-mail</label>
+                <input type="email" asp-for="Input!.Email" class="form-control">
+            </div>
+            <div class="mb-5">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input type="password" asp-for="Input.Password" class="form-control">
+            </div>
+
+            @Html.AntiForgeryToken()
+            
+            <input type="submit" class="btn btn-primary w-100" value="Login">
+        </div>
+    </form>
+    <div id="error-wrapper"></div>
+</div>

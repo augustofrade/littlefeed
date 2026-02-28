@@ -27,14 +27,22 @@ public sealed class AccountService(UserManager<ApplicationUser> userManager, Sig
         return RegisterResult.Success();
     }
     
-    public async Task<bool> SignInAsync(string email, string password)
+    public async Task<LoginResult> SignInAsync(string email, string password)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user == null)
-            return false;
+            return LoginResult.Success();
         
         var signinResult = await signInManager.PasswordSignInAsync(user, password, IsAuthPersistent, false);
+
+        if (signinResult.IsLockedOut)
+            return LoginResult.LockedOut();
         
-        return signinResult.Succeeded;
+        if (signinResult.IsNotAllowed)
+            return LoginResult.RequiresEmailConfirmation();
+        
+        return !signinResult.Succeeded
+            ? LoginResult.InvalidCredentials()
+            : LoginResult.Success();
     }
 }
