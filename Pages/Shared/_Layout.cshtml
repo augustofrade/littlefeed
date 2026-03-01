@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Microsoft.IdentityModel.Tokens
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -36,7 +38,17 @@
                         }
                         else
                         {
-                            <a class="btn btn-primary btn-sm" asp-area="Account" asp-page="Index">Account</a>
+                            var displayName = User.FindFirstValue("display_name");
+                            
+                            <a class="btn btn-light btn-sm d-inline-flex align-items-center gap-2"
+                               asp-area="Account" asp-page="Index"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Your account"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                </svg>
+                                @(displayName ?? "Account")
+                            </a>
                             <form hx-post="@Url.Content("/Account/Logout")">
                                 @Html.AntiForgeryToken()
                                 <button class="btn btn-light btn-sm">Logout</button>
@@ -63,6 +75,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>  
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

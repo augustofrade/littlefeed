@@ -13,6 +13,10 @@ public record CreateAccountDto
     [EmailAddress]
     [MaxLength(50)]
     public string Email { get; set; }
+    
+    [Required]
+    [MaxLength(50)]
+    public string Username { get; set; }
 
     [Required]
     public string Password { get; set; }
@@ -36,7 +40,7 @@ public class Register(IAccountService accountService) : PageModel
             return RegisterError(errors.ToList());
         }
         
-        var registerResult = await accountService.RegisterAsync(Input.Email, Input.Password);
+        var registerResult = await accountService.RegisterAsync(Input.Email,  Input.Username, Input.Password);
         if(!registerResult.Succeeded)
             return RegisterError(registerResult.Errors.ToList());
         
