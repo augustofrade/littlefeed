@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LittleFeed.Areas.Newsletter.Pages;
+namespace LittleFeed.Areas.Dashboard.Pages.Newsletters;
 
-[Authorize]
 public class New(INewsletterService newsletterService, ILogger<New> logger) : PageModel
 {
     [BindProperty]
