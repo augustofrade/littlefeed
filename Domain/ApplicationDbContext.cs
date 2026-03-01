@@ -43,13 +43,19 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
             .OnDelete(DeleteBehavior.Cascade);
 
         // Article
-        builder.Entity<Article>()
-            .Property(a => a.Title)
-            .HasMaxLength(50)
-            .IsRequired();
-        builder.Entity<Article>()
-            .Property(a => a.Excerpt)
-            .HasMaxLength(100);
+        builder.Entity<Article>(b =>
+        {
+            b.Property(a => a.Title)
+                .HasMaxLength(50)
+                .IsRequired();
+            b.Property(a => a.Slug)
+                .HasMaxLength(50)
+                .IsRequired();
+            b.Property(a => a.Excerpt)
+                .HasMaxLength(100);
+            b.Property(a => a.IsDraft)
+                .IsRequired();
+        });
         
         // UserProfile
         builder.Entity<UserProfile>(b =>

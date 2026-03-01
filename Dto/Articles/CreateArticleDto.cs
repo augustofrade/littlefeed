@@ -11,5 +11,8 @@ public record CreateArticleDto
     [Required]
     public required string Body { get; init; }
     [Required]
+    public bool IsDraft { get; init; }
+    [Required]
     public required Guid NewsletterId { get; init; }
+
 }

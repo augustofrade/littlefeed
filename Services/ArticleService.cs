@@ -45,9 +45,9 @@ public class ArticleService(ApplicationDbContext dbContext,
         if (newsletter == null)
             return null;
         
-        // TODO: check if user has permission to create article in newsletter   
+        // TODO: check if user has permission to create article in newsletter
         
-        var article = Article.Create(createDto.Title, createDto.Excerpt, createDto.Body, newsletter);
+        var article = Article.Create(createDto.Title, createDto.Excerpt, createDto.Body, createDto.IsDraft, newsletter);
         
         await dbContext.Articles.AddAsync(article);
         await dbContext.SaveChangesAsync();
@@ -61,6 +61,7 @@ public class ArticleService(ApplicationDbContext dbContext,
             .AsNoTracking()
             .OrderByDescending(a => a.CreatedAt)
             .Skip(count * skip)
+            .Where(a => !a.IsDraft)
             .Take(count);
     }
 }
