@@ -54,6 +54,8 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
         // UserProfile
         builder.Entity<UserProfile>(b =>
         {
+            b.Property(u => u.DisplayName).HasMaxLength(40);
+            b.Property(u => u.Slug).HasMaxLength(40);
             b.HasOne<ApplicationUser>()
                 .WithOne()
                 .HasForeignKey<UserProfile>(u => u.UserId)
