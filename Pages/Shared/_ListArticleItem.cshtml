@@ -1,0 +1,13 @@
+@model LittleFeed.Dto.Articles.ListArticleDto
+
+<a asp-area="Newsletter" asp-page="Article/a/@Model.Slug">
+    <article class="card">
+        <div class="card-body">
+            <h3>
+                @Model.Title
+            </h3>
+            <span class="d-block text-muted">@Model.CreatedAt.ToLocalTime().ToShortDateString()</span>
+            <p class="text-truncate">@Model.Excerpt</p>
+        </div>
+    </article>
+</a>

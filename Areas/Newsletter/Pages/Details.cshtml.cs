@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Newsletter.Pages;
 
-public class Details(INewsletterService newsletterService, ILogger<Details> logger)  : PageModel
+public class Details(INewsletterService newsletterService,
+    IArticleService articleService,
+    ILogger<Details> logger)  : PageModel
 {
     public NewsletterDto Newsletter { get; private set; }
     
-    public async Task<IActionResult> OnGetAsync(string? slug)
+    public async Task<IActionResult> OnGetAsync(string? slug, int page = 0)
     {
         if (slug is null)
         {
@@ -24,6 +26,10 @@ public class Details(INewsletterService newsletterService, ILogger<Details> logg
             logger.LogWarning("Article page accessed with invalid slug");
             return RedirectToPage("NotFound");
         }
+        
+        const int pageSize = 10;
+
+        newsletter.Articles = await articleService.GetLatestArticlesFromNewsletterAsync(newsletter.Id, pageSize * page, page);
         
         Newsletter = newsletter;
         return Page();

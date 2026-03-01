@@ -7,8 +7,8 @@ namespace LittleFeed.Services;
 
 public interface IArticleService
 {
-    Task<List<Article>> GetLatestArticlesAsync(int count, int skip = 0);
-    Task<List<Article>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
+    Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0);
+    Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
     Task<Article?> GetArticleByIdAsync(Guid id);
     Task<Article?> GetArticleBySlugAsync(string slug);
     Task<Article?> CreateArticleAsync(CreateArticleDto createDto);
@@ -18,12 +18,12 @@ public class ArticleService(ApplicationDbContext dbContext,
     INewsletterService newsletterService,
     ILogger<ArticleService> logger) : IArticleService
 {
-    public Task<List<Article>> GetLatestArticlesAsync(int count, int skip = 0)
+    public Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0)
     {
         return LatestArticlesQuery(count, skip).ToListAsync();
     }
     
-    public Task<List<Article>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0)
+    public Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0)
     {
         return LatestArticlesQuery(count, skip).Where(a => a.NewsletterId == newsletterId).ToListAsync();
     }
@@ -55,13 +55,21 @@ public class ArticleService(ApplicationDbContext dbContext,
         return article;
     }
 
-    private IQueryable<Article> LatestArticlesQuery(int count = 0, int skip = 0)
+    private IQueryable<ListArticleDto> LatestArticlesQuery(int count = 0, int skip = 0)
     {
         return dbContext.Articles
             .AsNoTracking()
             .OrderByDescending(a => a.CreatedAt)
             .Skip(count * skip)
             .Where(a => !a.IsDraft)
-            .Take(count);
+            .Take(count)
+            .Select(a => new ListArticleDto
+            {
+                Title =  a.Title,
+                Slug =   a.Slug,
+                Excerpt = a.Excerpt,
+                CreatedAt = a.CreatedAt,
+                NewsletterId = a.NewsletterId
+            });
     }
 }

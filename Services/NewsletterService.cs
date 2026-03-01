@@ -44,6 +44,7 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
 
         return new NewsletterDto
         {
+            Id = newsletter.Id,
             Name = newsletter.Name,
             Description = newsletter.Description,
             Slug = newsletter.Slug,
@@ -59,6 +60,7 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
         await dbContext.SaveChangesAsync();
         return new NewsletterDto
         {
+            Id = newsletter.Id,
             Name = newsletter.Name,
             Description = newsletter.Description,
             Slug = newsletter.Slug,

@@ -3,13 +3,19 @@
 
 @{
     Layout = "_Layout";
+    var newsletterUrl = Url.PageLink("/Details", values: new { area = "Newsletter", slug = Model.Newsletter.Slug });
 }
 
-<div class="mb-5">
+<section class="mb-5">
     <h1>@Model.Newsletter.Name</h1>
-    <section class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <span class="d-flex align-items-center gap-2 text-muted">
-            <span class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Click to copy">[n/@Model.Newsletter.Slug]</span>
+            <span class="btn btn-light btn-sm"
+                  data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Click to copy"
+                  onclick="navigator.clipboard.writeText('@newsletterUrl')"
+            >
+                [n/@Model.Newsletter.Slug]
+            </span>
             <span>Created at @Model.Newsletter.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'at' HH:mm")</span>
         </span>
         <div>
@@ -20,9 +26,21 @@
                 RSS
             </button>
         </div>
-    </section>
-</div>
+    </div>
+    <div>
+        @Model.Newsletter.Description
+    </div>
+</section>
 
-<div>
-    @Model.Newsletter.Description
-</div>
+
+<section>
+    <div class="mb-3 d-flex justify-content-end">
+        <a asp-page="Article/New" class="btn btn-primary">Write new article</a>
+    </div>
+    <div>
+        @foreach (var article in Model.Newsletter.Articles)
+        {
+            @(await Html.PartialAsync("Shared/_ListArticleItem", article))
+        }
+    </div>
+</section>
