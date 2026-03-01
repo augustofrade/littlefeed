@@ -1,4 +1,6 @@
-﻿namespace LittleFeed.Domain.Newsletters;
+﻿using LittleFeed.Domain.Common;
+
+namespace LittleFeed.Domain.Newsletters;
 
 public class Newsletter : Entity
 {
@@ -6,25 +8,19 @@ public class Newsletter : Entity
 
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public DateTime? LastPostDate { get; set; }
 
     public ICollection<Article> Articles { get; private init; } = [];
 
     private Newsletter() { }
 
-    public Newsletter(string name, string? slug, string description)
+    public static Newsletter Create(string name, string description)
     {
-        Name = name;
-        Slug = slug ?? name.ToLower().Replace(' ', '-');
-        Description = description;
-    }
-
-    public void AddArticle(Article article)
-    {
-        article.SetNewsletter(this);
-        Articles.Add(article);
-    }
-
-    public void RemoveArticle(Article article) {
-        Articles.Remove(article);
+        return new Newsletter
+        {
+            Name = name,
+            Slug = Slugifier.Slugify(name),
+            Description = description,
+        };
     }
 }

@@ -34,6 +34,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Logging.AddConsole();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<INewsletterService, NewsletterService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
 
 var app = builder.Build();
 

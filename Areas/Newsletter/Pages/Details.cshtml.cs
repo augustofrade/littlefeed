@@ -13,6 +13,7 @@ public class Details(INewsletterService newsletterService, ILogger<Details> logg
     {
         if (slug is null)
         {
+            // TODO: fix this
             logger.LogWarning("Article page accessed without a slug");
             return RedirectToPage("/Index");
         }

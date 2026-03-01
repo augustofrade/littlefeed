@@ -30,7 +30,6 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
     {
         return dbContext.Newsletters
             .Where(n => n.Id == id)
-            .Include(n => n.Articles)
             .FirstOrDefaultAsync();
     }
 
@@ -38,7 +37,6 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
     {
         var newsletter = await dbContext.Newsletters
             .Where(n => n.Slug == slug)
-            .Include(n => n.Articles)
             .FirstOrDefaultAsync();
         
         if(newsletter is null)
@@ -55,7 +53,7 @@ public class NewsletterService(ApplicationDbContext dbContext, ILogger<Newslette
 
     public async Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto)
     {
-        var newsletter = new Newsletter(createDto.Name, createDto.Slug, createDto.Description);
+        var newsletter = Newsletter.Create(createDto.Name, createDto.Description);
         logger.LogInformation("Creating new newsletter");
         dbContext.Newsletters.Add(newsletter);
         await dbContext.SaveChangesAsync();

@@ -1,10 +1,12 @@
 using LittleFeed.Dto.Newsletters;
 using LittleFeed.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Newsletter.Pages;
 
+[Authorize]
 public class New(INewsletterService newsletterService, ILogger<New> logger) : PageModel
 {
     [BindProperty]
