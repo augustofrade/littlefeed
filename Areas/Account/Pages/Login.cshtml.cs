@@ -25,9 +25,15 @@ public class Login(IAccountService accountService) : PageModel
     [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
     
-    public void OnGet()
+    public IActionResult OnGet()
     {
+        if (User.Identity is {IsAuthenticated : true})
+        {
+            return RedirectToPage("/Index");
+        }
+        
         ReturnUrl ??= Url.Content("~/");
+        return Page();
     }
     
     public async Task<IActionResult> OnPostAsync()
