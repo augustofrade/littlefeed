@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
     public required DbSet<Newsletter> Newsletters { get; set; }
     public required DbSet<Article> Articles { get; set; }
     public required DbSet<UserProfile> UserProfiles { get; set; }
+    public required DbSet<NewsletterMember> NewsletterMembers { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
@@ -41,6 +42,24 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
             .WithOne(a => a.Newsletter)
             .HasForeignKey(a => a.NewsletterId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Newsletter>()
+            .HasMany(n => n.Members)
+            .WithOne()
+            .HasForeignKey(nm => nm.NewsletterId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // NewsletterMember
+        builder.Entity<NewsletterMember>(b =>
+        {
+            b.Property(n => n.NewsletterId).IsRequired();
+            b.Property(n => n.UserId).IsRequired();
+            b.Property(n => n.Role).IsRequired();
+            b.HasIndex(n => new { n.NewsletterId, n.UserId });
+            b.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         // Article
         builder.Entity<Article>(b =>

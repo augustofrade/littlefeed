@@ -11,6 +11,7 @@ public class Newsletter : Entity
     public DateTime? LastPostDate { get; set; }
 
     public ICollection<Article> Articles { get; private init; } = [];
+    public ICollection<NewsletterMember> Members { get; private init; } = [];
 
     private Newsletter() { }
 
