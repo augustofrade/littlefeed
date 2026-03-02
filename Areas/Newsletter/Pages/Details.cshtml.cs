@@ -9,7 +9,7 @@ public class Details(INewsletterService newsletterService,
     IArticleService articleService,
     ILogger<Details> logger)  : PageModel
 {
-    public NewsletterDto Newsletter { get; private set; }
+    public required NewsletterDto Newsletter { get; set; }
     
     public async Task<IActionResult> OnGetAsync(string? slug, int page = 0)
     {

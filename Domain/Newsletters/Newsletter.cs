@@ -24,4 +24,18 @@ public class Newsletter : Entity
             Description = description,
         };
     }
+
+    /// <summary>
+    /// Note: A Newsletter will always have an owner
+    /// </summary>
+    /// <returns></returns>
+    public NewsletterMember GetOwner()
+    {
+        return Members.First(nm => nm.Role == NewsletterRole.Owner);
+    }
+    
+    public bool CanBeEditedByUser(string memberUserId)
+    {
+        return Members.Any(nm => nm.UserId == memberUserId);
+    }
 }

@@ -38,10 +38,16 @@ public class NewsletterService(ApplicationDbContext dbContext,
     {
         var newsletter = await dbContext.Newsletters
             .Where(n => n.Slug == slug)
+            .Include(n => n.Members)
             .FirstOrDefaultAsync();
         
         if(newsletter is null)
             return null;
+
+        var ownerUser = newsletter.GetOwner();
+        string? authorName = null;
+        var ownerProfile = await dbContext.UserProfiles.FirstOrDefaultAsync(up => up.UserId == ownerUser.UserId);
+        authorName = ownerProfile?.DisplayName;
 
         return new NewsletterDto
         {
@@ -50,6 +56,7 @@ public class NewsletterService(ApplicationDbContext dbContext,
             Description = newsletter.Description,
             Slug = newsletter.Slug,
             CreatedAt = newsletter.CreatedAt,
+            Author = authorName,
         };
     }
 

@@ -16,7 +16,9 @@
             >
                 [n/@Model.Newsletter.Slug]
             </span>
-            <span>Created at @Model.Newsletter.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'at' HH:mm")</span>
+            <span>
+                Created by @Model.Newsletter.Author at @Model.Newsletter.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'at' HH:mm")
+            </span>
         </span>
         <div>
             <button class="btn btn-light btn-sm">
