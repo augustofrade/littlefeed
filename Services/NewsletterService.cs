@@ -9,7 +9,7 @@ namespace LittleFeed.Services;
 public interface INewsletterService
 {
     Task<List<ListNewsletterDto>> GetNewsletters();
-    Task<List<ListNewsletterDto>> GetNewslettersUserCanEdit(string userId);
+    Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
     Task<Newsletter?> GetNewsletterById(Guid id);
     Task<NewsletterDto?> GetNewsletterBySlug(string slug);
     Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId);
@@ -41,16 +41,16 @@ public class NewsletterService(ApplicationDbContext dbContext,
         throw new NotImplementedException();
     }
 
-    public Task<List<ListNewsletterDto>> GetNewslettersUserCanEdit(string userId)
+    public Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId)
     {
         return dbContext.Newsletters
             .Where(n => n.OwnerId == userId || n.Members.Any(m => m.UserId == userId))
-            .Select(n => new ListNewsletterDto(
+            .Select(n => new ListOwnedNewsletterDto(
                 n.Name,
                 n.Slug,
                 n.Description,
                 n.CreatedAt,
-                new NewsletterOwnerDto(n.OwnerId, null, null)
+                n.OwnerId == userId
             ))
             .ToListAsync();
     }

@@ -10,8 +10,8 @@ public class Index(INewsletterService newsletterService,
     UserManager<ApplicationUser>  userManager) : PageModel
 {
 
-    public List<ListNewsletterDto> NewslettersOwnedByUser { get; set; } = [];
-    public List<ListNewsletterDto> NewslettersUserCanWriteTo { get; set; } = [];
+    public List<ListOwnedNewsletterDto> NewslettersOwnedByUser { get; set; } = [];
+    public List<ListOwnedNewsletterDto> NewslettersUserCanWriteTo { get; set; } = [];
     
     public async Task OnGetAsync()
     {
@@ -21,7 +21,7 @@ public class Index(INewsletterService newsletterService,
 
         foreach (var newsletter in newslettersUserIsAssignedTo)
         {
-            if(newsletter.Owner.Id == currentUserId)
+            if(newsletter.IsOwner)
                 NewslettersOwnedByUser.Add(newsletter);
             else
                 NewslettersUserCanWriteTo.Add(newsletter);  
