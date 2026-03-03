@@ -8,6 +8,7 @@ public class Newsletter : Entity
 
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public required string OwnerId { get; set; }
     public DateTime? LastPostDate { get; set; }
 
     public ICollection<Article> Articles { get; private init; } = [];
@@ -15,27 +16,29 @@ public class Newsletter : Entity
 
     private Newsletter() { }
 
-    public static Newsletter Create(string name, string description)
+    public static Newsletter Create(string name, string description, string ownerId)
     {
         return new Newsletter
         {
             Name = name,
             Slug = Slugifier.Slugify(name),
             Description = description,
+            OwnerId = ownerId,
         };
     }
 
-    /// <summary>
-    /// Note: A Newsletter will always have an owner
-    /// </summary>
-    /// <returns></returns>
-    public NewsletterMember GetOwner()
+    public bool IsOwner(string ownerId)
     {
-        return Members.First(nm => nm.Role == NewsletterRole.Owner);
+        return OwnerId == ownerId;
+    }
+
+    public IEnumerable<NewsletterMember> GetWriters(string ownerId)
+    {
+        return  Members.Where(m => m.UserId == ownerId && m.Role != NewsletterRole.Writer);
     }
     
     public bool CanBeEditedByUser(string memberUserId)
     {
-        return Members.Any(nm => nm.UserId == memberUserId);
+        return OwnerId == memberUserId || Members.Any(nm => nm.UserId == memberUserId);
     }
 }
