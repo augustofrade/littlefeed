@@ -1,3 +1,5 @@
 namespace LittleFeed.Dto.Newsletters;
 
-public record ListNewsletterDto(string Name, string Slug, string Description, DateTime CreatedAt);
+public record ListNewsletterDto(string Name, string Slug, string Description, DateTime CreatedAt, NewsletterOwnerDto Owner)
+{
+}

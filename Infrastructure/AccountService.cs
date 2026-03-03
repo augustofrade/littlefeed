@@ -32,11 +32,7 @@ public sealed class AccountService(
         if (!registerResult.Succeeded)
             return RegisterResult.Failure(registerResult.Errors.Select(e => e.Description).ToList());
 
-        await dbContext.UserProfiles.AddAsync(new UserProfile
-        {
-            UserId = newUser.Id,
-            DisplayName = userName
-        });
+        await dbContext.UserProfiles.AddAsync(UserProfile.Create(newUser.Id, userName));
         await  dbContext.SaveChangesAsync(); 
 
         await SignInWithClaimsAsync(newUser, userName);
