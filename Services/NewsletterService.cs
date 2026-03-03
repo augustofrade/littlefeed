@@ -12,6 +12,7 @@ public interface INewsletterService
     Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
     Task<Newsletter?> GetNewsletterById(Guid id);
     Task<NewsletterDto?> GetNewsletterBySlug(string slug);
+    Task<string?> GetNewsletterNameBySlug(string slug);
     Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId);
     Task<Newsletter> UpdateNewsletter(Newsletter newsletter);
     Task DeleteNewsletter(string id);
@@ -85,6 +86,14 @@ public class NewsletterService(ApplicationDbContext dbContext,
             CreatedAt = newsletter.CreatedAt,
             Author = authorName,
         };
+    }
+
+    public Task<string?> GetNewsletterNameBySlug(string slug)
+    {
+        return dbContext.Newsletters
+            .Where(n => n.Slug == slug)
+            .Select(n => n.Name)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId)
