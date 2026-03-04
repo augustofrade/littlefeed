@@ -6,5 +6,6 @@ public class ArticleDto
     public required string Slug { get; set; }
     public required string Excerpt { get; set; }
     public required string Body { get; set; }
-    public Guid NewsletterId { get; private set; }
+    public required bool IsDraft { get; set; }
+    public required string NewsletterSlug { get; set; }
 }

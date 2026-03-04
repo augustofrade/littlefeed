@@ -11,7 +11,7 @@ public interface IArticleService
     Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
     Task<Article?> GetArticleByIdAsync(Guid id);
     Task<Article?> GetArticleBySlugAsync(string slug);
-    Task<Article?> CreateArticleAsync(CreateArticleDto createDto);
+    Task<ArticleDto?> CreateArticleAsync(CreateArticleDto createDto, string userId);
 }
 
 public class ArticleService(ApplicationDbContext dbContext,
@@ -38,21 +38,32 @@ public class ArticleService(ApplicationDbContext dbContext,
         return  dbContext.Articles.FirstOrDefaultAsync(a => a.Slug == slug);
     }
 
-    public async Task<Article?> CreateArticleAsync(CreateArticleDto createDto)
+    public async Task<ArticleDto?> CreateArticleAsync(CreateArticleDto createDto, string userId)
     {
-        // TODO: create Result type and errors
-        var newsletter = await newsletterService.GetNewsletterById(createDto.NewsletterId);
+        var newslettersUserCanEdit = await newsletterService.GetNewslettersUserCanEdit(userId);
+        
+        // Checks both existence of the newsletter by ID and if the user has permission to write to it.
+        var newsletter = newslettersUserCanEdit.FirstOrDefault(n => n.Id == createDto.NewsletterId);
         if (newsletter == null)
+        {
+            // TODO: create Result type and errors
             return null;
+        }
         
-        // TODO: check if user has permission to create article in newsletter
-        
-        var article = Article.Create(createDto.Title, createDto.Excerpt, createDto.Body, createDto.IsDraft, newsletter);
+        var article = Article.Create(createDto.Title, createDto.Excerpt, createDto.Body, createDto.IsDraft, newsletter.Id);
         
         await dbContext.Articles.AddAsync(article);
         await dbContext.SaveChangesAsync();
     
-        return article;
+        return new ArticleDto
+        {
+            Title =  article.Title,
+            Slug = article.Slug,
+            Excerpt = article.Excerpt,
+            Body = article.Body,
+            IsDraft = article.IsDraft,
+            NewsletterSlug =  article.Slug
+        };
     }
 
     private IQueryable<ListArticleDto> LatestArticlesQuery(int count = 0, int skip = 0)

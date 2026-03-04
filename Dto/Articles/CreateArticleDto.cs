@@ -6,8 +6,8 @@ public record CreateArticleDto
 {
     [Required]
     public required string Title { get; init; }
-    [Required]
-    public required string Excerpt { get; init; }
+
+    public string Excerpt { get; set; } = string.Empty;
     [Required]
     public required string Body { get; init; }
     [Required]

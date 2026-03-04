@@ -47,6 +47,7 @@ public class NewsletterService(ApplicationDbContext dbContext,
         return dbContext.Newsletters
             .Where(n => n.OwnerId == userId || n.Members.Any(m => m.UserId == userId))
             .Select(n => new ListOwnedNewsletterDto(
+                n.Id,
                 n.Name,
                 n.Slug,
                 n.Description,
@@ -67,7 +68,6 @@ public class NewsletterService(ApplicationDbContext dbContext,
     {
         var newsletter = await dbContext.Newsletters
             .Where(n => n.Slug == slug)
-            .Include(n => n.Members)
             .FirstOrDefaultAsync();
         
         if(newsletter is null)

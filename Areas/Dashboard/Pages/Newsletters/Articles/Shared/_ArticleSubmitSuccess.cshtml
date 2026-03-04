@@ -1,0 +1,20 @@
+@model LittleFeed.Dto.Articles.ArticleDto
+
+<div class="alert alert-success mb-5" role="alert">
+    @if (Model.IsDraft)
+    {
+        <span>Draft saved successfully!</span>
+    }
+    else
+    {
+        <span>Article published successfully!</span>
+    }
+    
+    <a
+        asp-area="Newsletter"
+        asp-page="/Article/Index"
+        asp-route-newsletterSlug="@Model.NewsletterSlug"
+        asp-route-articleSlug="@Model.Slug">
+    Visit article
+    </a>
+</div>

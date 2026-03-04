@@ -14,7 +14,7 @@ public class Article : Entity
 
     private Article() { }
 
-    public static Article Create(string title, string excerpt, string body, bool isDraft, Newsletter newsletter)
+    public static Article Create(string title, string excerpt, string body, bool isDraft, Guid newsletterId)
     {
         return new Article
         {
@@ -22,8 +22,7 @@ public class Article : Entity
             Slug = Slugifier.Slugify(title),
             Excerpt = excerpt,
             Body = body,
-            NewsletterId = newsletter.Id,
-            Newsletter = newsletter,
+            NewsletterId = newsletterId,
             IsDraft =  isDraft,
         };
     }
