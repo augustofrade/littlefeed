@@ -1,6 +1,8 @@
 using LittleFeed.Application.Accounts;
+using LittleFeed.Common;
 using LittleFeed.Domain;
 using LittleFeed.Infrastructure;
+using LittleFeed.Infrastructure.Auth;
 using LittleFeed.Infrastructure.Identity;
 using LittleFeed.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +37,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Logging.AddConsole();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<INewsletterService, NewsletterService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
