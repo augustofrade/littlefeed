@@ -1,9 +1,7 @@
-using Humanizer;
+using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
 using LittleFeed.Dto.Newsletters;
-using LittleFeed.Infrastructure.Identity;
 using LittleFeed.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -11,9 +9,10 @@ namespace LittleFeed.Areas.Dashboard.Pages.Newsletters.Articles;
 
 public class Write(INewsletterService newsletterService,
     IArticleService articleService,
-    UserManager<ApplicationUser> userManager) : PageModel
+    ICurrentUser currentUser): PageModel
 {
     public required NewsletterDto CurrentNewsletter { get; set; }
+    
     [BindProperty]
     public CreateArticleDto Input { get; set; }
     
@@ -21,41 +20,48 @@ public class Write(INewsletterService newsletterService,
     {
         var newsletter = await newsletterService.GetNewsletterBySlug(newsletterSlug);
         if (newsletter == null)
-        {
             return RedirectToPage("/Index");
-        }
+
+        var canUserEdit = await newsletterService.CanUserEditNewsletter(newsletter.Id, currentUser.UserId!);
+        if(!canUserEdit)
+            return RedirectToPage("/Index");
+        
         CurrentNewsletter = newsletter;
         
         return Page();
     }
 
-    public void OnPostPublishAsync()
+    public async Task<IActionResult> OnPostPublishAsync()
     {
-        Input.IsDraft = false;
+        if (!ModelState.IsValid)
+            return SubmitError(ModelStateErrors());
+
+        var result = await articleService.CreateArticleAsync(Input, currentUser.UserId!);
+        if(!result.IsSuccess)
+            return SubmitError(result.Error);
+
+        return Partial("Shared/_ArticleSubmitSuccess", result.Data);
     }
     
     public async Task<IActionResult> OnPostDraftAsync()
     {
-        Input.Excerpt = Input.Body.Truncate(100);
         if (!ModelState.IsValid)
-        {
-            var errors =  ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return SubmitError(errors.ToList());
-        }
-        
-        // Make sure it is a draft if the user manages to change it
-        Input.IsDraft = true;
-        var currentUserId = userManager.GetUserId(User);
-        var result = await articleService.CreateArticleAsync(Input, currentUserId!);
-        
-        if(result == null)
-            return SubmitError(["Unknown error"]);
+            return SubmitError(ModelStateErrors());
 
-        return Partial("Shared/_ArticleSubmitSuccess", result);
+        var result = await articleService.CreateArticleAsDraftAsync(Input, currentUser.UserId!);
+        if(!result.IsSuccess)
+            return SubmitError(result.Error);
+
+        return Partial("Shared/_ArticleSubmitSuccess", result.Data);
     }
     
-    private PartialViewResult SubmitError(List<string> errors)
+    private PartialViewResult SubmitError(params List<string> errors)
     {
         return Partial("Shared/_ArticleSubmitError", errors);
+    }
+
+    private List<string> ModelStateErrors()
+    {
+        return ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
     }
 }

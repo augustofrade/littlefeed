@@ -6,13 +6,15 @@ using Microsoft.EntityFrameworkCore;
 namespace LittleFeed.Services;
 
 
+// TODO: split interface into INewsletterQueries, INewsletterAccess, INewsletterCommands
 public interface INewsletterService
 {
     Task<List<ListNewsletterDto>> GetNewsletters();
     Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
-    Task<Newsletter?> GetNewsletterById(Guid id);
+    Task<string?> GetNewsletterSlugIfUserCanEdit(Guid newsletterId, string userId);
     Task<NewsletterDto?> GetNewsletterBySlug(string slug);
-    Task<string?> GetNewsletterNameBySlug(string slug);
+    Task<string?> GetNewsletterSlug(Guid id);
+    Task<bool> CanUserEditNewsletter(Guid id, string userId);
     Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId);
     Task<Newsletter> UpdateNewsletter(Newsletter newsletter);
     Task DeleteNewsletter(string id);
@@ -57,10 +59,11 @@ public class NewsletterService(ApplicationDbContext dbContext,
             .ToListAsync();
     }
 
-    public Task<Newsletter?> GetNewsletterById(Guid id)
+    public Task<string?> GetNewsletterSlugIfUserCanEdit(Guid newsletterId, string userId)
     {
-        return dbContext.Newsletters
-            .Where(n => n.Id == id)
+        return  dbContext.Newsletters
+            .Where(n => n.OwnerId == userId || n.Members.Any(m => m.UserId == userId))
+            .Select(n => n.Slug)
             .FirstOrDefaultAsync();
     }
 
@@ -88,12 +91,20 @@ public class NewsletterService(ApplicationDbContext dbContext,
         };
     }
 
-    public Task<string?> GetNewsletterNameBySlug(string slug)
+    public Task<string?> GetNewsletterSlug(Guid id)
     {
         return dbContext.Newsletters
-            .Where(n => n.Slug == slug)
-            .Select(n => n.Name)
+            .AsNoTracking()
+            .Where(n => n.Id == id)
+            .Select(n => n.Slug)
             .FirstOrDefaultAsync();
+    }
+
+    public Task<bool> CanUserEditNewsletter(Guid id, string userId)
+    {
+        return dbContext.Newsletters
+            .AsNoTracking()
+            .AnyAsync(n  => n.Id == id && (n.OwnerId == userId || n.Members.Any(m => m.UserId == userId)));
     }
 
     public async Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId)
