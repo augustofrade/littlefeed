@@ -1,14 +1,13 @@
+using LittleFeed.Application.Newsletters;
 using LittleFeed.Dto.Newsletters;
 using LittleFeed.Infrastructure.Identity;
-using LittleFeed.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Dashboard.Pages.Newsletters;
 
-public class New(INewsletterService newsletterService,
+public class New(INewsletterCommands newsletterCommands,
     UserManager<ApplicationUser>  userManager,
     ILogger<New> logger) : PageModel
 {
@@ -27,7 +26,7 @@ public class New(INewsletterService newsletterService,
         var currentUserId = userManager.GetUserId(User);
         
         logger.LogInformation("Received Newsletter POST request");
-        var newsletter = await newsletterService.CreateNewsletter(Input, currentUserId!);
+        var newsletter = await newsletterCommands.CreateNewsletter(Input, currentUserId!);
         return RedirectToPage("/Details",  new { area = "Newsletter", slug = newsletter.Slug });
     }
 }

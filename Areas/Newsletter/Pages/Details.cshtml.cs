@@ -1,3 +1,4 @@
+using LittleFeed.Application.Newsletters;
 using LittleFeed.Dto.Newsletters;
 using LittleFeed.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Newsletter.Pages;
 
-public class Details(INewsletterService newsletterService,
+public class Details(INewsletterQueries newsletterQueries,
     IArticleService articleService,
     ILogger<Details> logger)  : PageModel
 {
@@ -20,7 +21,7 @@ public class Details(INewsletterService newsletterService,
             return RedirectToPage("/Index");
         }
 
-        var newsletter = await newsletterService.GetNewsletterBySlug(slug);
+        var newsletter = await newsletterQueries.GetNewsletterBySlug(slug);
         if (newsletter is null)
         {
             logger.LogWarning("Article page accessed with invalid slug");

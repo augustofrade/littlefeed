@@ -1,3 +1,4 @@
+using LittleFeed.Application.Newsletters;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Newsletters;
@@ -5,23 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LittleFeed.Services;
 
-
-// TODO: split interface into INewsletterQueries, INewsletterAccess, INewsletterCommands
-public interface INewsletterService
-{
-    Task<List<ListNewsletterDto>> GetNewsletters();
-    Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
-    Task<string?> GetNewsletterSlugIfUserCanEdit(Guid newsletterId, string userId);
-    Task<NewsletterDto?> GetNewsletterBySlug(string slug);
-    Task<string?> GetNewsletterSlug(Guid id);
-    Task<bool> CanUserEditNewsletter(Guid id, string userId);
-    Task<NewsletterDto> CreateNewsletter(CreateNewsletterDto createDto, string ownerUserId);
-    Task<Newsletter> UpdateNewsletter(Newsletter newsletter);
-    Task DeleteNewsletter(string id);
-}
-
 public class NewsletterService(ApplicationDbContext dbContext,
-    ILogger<NewsletterService> logger) : INewsletterService
+    ILogger<NewsletterService> logger) : INewsletterQueries, INewsletterCommands, INewsletterAccess
 {
     public Task<List<ListNewsletterDto>> GetNewsletters()
     {

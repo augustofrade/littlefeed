@@ -1,12 +1,8 @@
-using LittleFeed.Application.Accounts;
-using LittleFeed.Common;
 using LittleFeed.Domain;
 using LittleFeed.Infrastructure;
 using LittleFeed.Infrastructure.Auth;
 using LittleFeed.Infrastructure.Identity;
-using LittleFeed.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,21 +22,15 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.ConfigureAuthentication(new InfrastructureAuthOptions
 {
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-    options.LogoutPath = "/Account/Logout";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-    options.SlidingExpiration = true;
-    options.Cookie.HttpOnly = true;
+    LoginPath = "/Account/Login",
+    LogoutPath = "/Account/Logout",
+    AccessDeniedPath = "/Account/AccessDenied",
 });
 
 builder.Logging.AddConsole();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<INewsletterService, NewsletterService>();
-builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 

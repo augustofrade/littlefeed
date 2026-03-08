@@ -1,4 +1,5 @@
 using Humanizer;
+using LittleFeed.Application.Newsletters;
 using LittleFeed.Common.Results;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
@@ -20,7 +21,8 @@ public interface IArticleService
 }
 
 public class ArticleService(ApplicationDbContext dbContext,
-    INewsletterService newsletterService,
+    INewsletterQueries newsletterQueries,
+    INewsletterAccess newsletterAccess,
     ILogger<ArticleService> logger) : IArticleService
 {
     public Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0)
@@ -74,11 +76,11 @@ public class ArticleService(ApplicationDbContext dbContext,
     
     private async Task<Result<ArticleDto>> CreateArticleAsync(Article article, string userId)
     {
-        var newsletterSlug = await newsletterService.GetNewsletterSlug(article.NewsletterId);
+        var newsletterSlug = await newsletterQueries.GetNewsletterSlug(article.NewsletterId);
         if (newsletterSlug == null)
             return Result<ArticleDto>.Failure("Newsletter not found");
         
-        var canUserEditNewsletter = await newsletterService.CanUserEditNewsletter(article.NewsletterId, userId);
+        var canUserEditNewsletter = await newsletterAccess.CanUserEditNewsletter(article.NewsletterId, userId);
         if (!canUserEditNewsletter)
             return Result<ArticleDto>.Failure("You do not have permission to edit this newsletter");
         

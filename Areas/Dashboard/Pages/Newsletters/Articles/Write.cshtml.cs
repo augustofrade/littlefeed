@@ -1,3 +1,4 @@
+using LittleFeed.Application.Newsletters;
 using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
 using LittleFeed.Dto.Newsletters;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Dashboard.Pages.Newsletters.Articles;
 
-public class Write(INewsletterService newsletterService,
+public class Write(INewsletterQueries newsletterQueries,
+    INewsletterAccess newsletterAccess,
     IArticleService articleService,
     ICurrentUser currentUser): PageModel
 {
@@ -18,11 +20,11 @@ public class Write(INewsletterService newsletterService,
     
     public async Task<IActionResult> OnGetAsync(string newsletterSlug)
     {
-        var newsletter = await newsletterService.GetNewsletterBySlug(newsletterSlug);
+        var newsletter = await newsletterQueries.GetNewsletterBySlug(newsletterSlug);
         if (newsletter == null)
             return RedirectToPage("/Index");
 
-        var canUserEdit = await newsletterService.CanUserEditNewsletter(newsletter.Id, currentUser.UserId!);
+        var canUserEdit = await newsletterAccess.CanUserEditNewsletter(newsletter.Id, currentUser.UserId!);
         if(!canUserEdit)
             return RedirectToPage("/Index");
         
