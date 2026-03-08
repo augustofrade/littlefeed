@@ -1,3 +1,4 @@
+using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace LittleFeed.Areas.Dashboard.Pages.Newsletters;
 
 public class Index(INewsletterQueries newsletterQueries,
-    IArticleService articleService,
+    IArticleQueries articleQueries,
     ICurrentUser currentUser) : PageModel
 {
 
@@ -21,7 +22,7 @@ public class Index(INewsletterQueries newsletterQueries,
         var currentUserId = currentUser.UserId!;
         
         var newslettersUserIsAssignedTo = await newsletterQueries.GetNewslettersUserCanEdit(currentUserId);
-        LatestWrittenArticlesByUser = await articleService.GetLatestArticlesWrittenByUserAsync(currentUserId);
+        LatestWrittenArticlesByUser = await articleQueries.GetLatestArticlesWrittenByUserAsync(currentUserId);
 
         foreach (var newsletter in newslettersUserIsAssignedTo)
         {

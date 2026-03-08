@@ -1,8 +1,8 @@
+using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
 using LittleFeed.Dto.Newsletters;
-using LittleFeed.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -10,7 +10,7 @@ namespace LittleFeed.Areas.Dashboard.Pages.Newsletters.Articles;
 
 public class Write(INewsletterQueries newsletterQueries,
     INewsletterAccess newsletterAccess,
-    IArticleService articleService,
+    IArticleCommands articleCommands,
     ICurrentUser currentUser): PageModel
 {
     public required NewsletterDto CurrentNewsletter { get; set; }
@@ -38,7 +38,7 @@ public class Write(INewsletterQueries newsletterQueries,
         if (!ModelState.IsValid)
             return SubmitError(ModelStateErrors());
 
-        var result = await articleService.CreatePublishedArticleAsync(Input, currentUser.UserId!);
+        var result = await articleCommands.CreatePublishedArticleAsync(Input, currentUser.UserId!);
         if(!result.IsSuccess)
             return SubmitError(result.Error);
 
@@ -50,7 +50,7 @@ public class Write(INewsletterQueries newsletterQueries,
         if (!ModelState.IsValid)
             return SubmitError(ModelStateErrors());
 
-        var result = await articleService.CreateArticleAsDraftAsync(Input, currentUser.UserId!);
+        var result = await articleCommands.CreateArticleAsDraftAsync(Input, currentUser.UserId!);
         if(!result.IsSuccess)
             return SubmitError(result.Error);
 

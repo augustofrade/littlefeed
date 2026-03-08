@@ -1,4 +1,4 @@
-using Humanizer;
+using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Common.Results;
 using LittleFeed.Domain;
@@ -8,22 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LittleFeed.Services;
 
-public interface IArticleService
-{
-    Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0);
-    Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
-    Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5);
-    Task<Article?> GetArticleByIdAsync(Guid id);
-    Task<Article?> GetArticleBySlugAsync(string slug);
-    Task<bool> ArticleExists(string slug);
-    Task<Result<ArticleDto>> CreateArticleAsDraftAsync(CreateArticleDto createDto, string userId);
-    Task<Result<ArticleDto>> CreatePublishedArticleAsync(CreateArticleDto createDto, string userId);
-}
 
 public class ArticleService(ApplicationDbContext dbContext,
     INewsletterQueries newsletterQueries,
     INewsletterAccess newsletterAccess,
-    ILogger<ArticleService> logger) : IArticleService
+    ILogger<ArticleService> logger) : IArticleQueries, IArticleCommands
 {
     public Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0)
     {

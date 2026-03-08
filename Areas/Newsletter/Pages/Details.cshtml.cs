@@ -1,13 +1,13 @@
+using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Dto.Newsletters;
-using LittleFeed.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LittleFeed.Areas.Newsletter.Pages;
 
 public class Details(INewsletterQueries newsletterQueries,
-    IArticleService articleService,
+    IArticleQueries articleQueries,
     ILogger<Details> logger)  : PageModel
 {
     public required NewsletterDto Newsletter { get; set; }
@@ -30,7 +30,7 @@ public class Details(INewsletterQueries newsletterQueries,
         
         const int pageSize = 10;
 
-        newsletter.Articles = await articleService.GetLatestArticlesFromNewsletterAsync(newsletter.Id, pageSize * page, page);
+        newsletter.Articles = await articleQueries.GetLatestArticlesFromNewsletterAsync(newsletter.Id, pageSize * page, page);
         
         Newsletter = newsletter;
         return Page();
