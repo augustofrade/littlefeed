@@ -11,7 +11,7 @@ public interface IArticleService
 {
     Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0);
     Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
-    Task<List<ListWrittenArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5);
+    Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5);
     Task<Article?> GetArticleByIdAsync(Guid id);
     Task<Article?> GetArticleBySlugAsync(string slug);
     Task<bool> ArticleExists(string slug);
@@ -33,14 +33,14 @@ public class ArticleService(ApplicationDbContext dbContext,
         return LatestArticlesQuery(count, skip).Where(a => a.NewsletterId == newsletterId).ToListAsync();
     }
 
-    public Task<List<ListWrittenArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
+    public Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
     {
         return dbContext.Articles
             .AsNoTracking()
             .Where(a => a.AuthorId == userId)
             .Take(amount)
             .OrderBy(a => a.CreatedAt)
-            .Select(a => new ListWrittenArticleDto(a.Slug, a.Title, a.Newsletter.Slug, a.PublishDate))
+            .Select(a => new ListAuthoredArticleDto(a.Slug, a.Title, a.Newsletter.Slug, a.PublishDate))
             .ToListAsync();
     }
 

@@ -1,0 +1,47 @@
+@model List<LittleFeed.Dto.Articles.ListAuthoredArticleDto>
+
+<ul style="list-style: none; padding: 0">
+    @{
+        for (var index = 0; index < Model.Count; index++)
+        {
+            var article = Model.ElementAt(index);
+            <li>
+                <article class="text-decoration-none d-flex justify-content-between align-items-center px-4 py-2 rounded-2 clickable-list-item">
+                    <div>
+                        <span class="h4 d-block text-secondary fw-bold fs-5">@article.Title</span>
+                        <div class="d-flex align-items-center gap-4">
+                            @if (article.IsPublished)
+                            {
+                                var publishDateTime = article.PublishDate?.ToLocalTime();
+                                var publishDate = publishDateTime?.ToShortDateString();
+                                var publishTime = publishDateTime?.ToShortTimeString();
+                                <span class="text-muted">Published on @publishDate at @publishTime</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary-subtle text-dark">Draft</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-outline-primary btn-sm" asp-area="Dashboard" asp-page="/Newsletters/Articles/Edit" 
+                           asp-route-newsletterSlug="@article.NewsletterSlug" asp-route-articleSlug="@article.Slug">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/>
+                            </svg>
+                            Edit
+                        </a>
+                        <a class="btn btn-light btn-sm" asp-area="Newsletter" asp-page="/Articles/Index" asp-route-newsletterSlug="@article.NewsletterSlug" asp-route-articleSlug="@article.Slug">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                            </svg>
+                            View
+                        </a>
+                    </div>
+                </article>
+                <hr class="m-0" />
+            </li>
+        }
+    }
+</ul>
