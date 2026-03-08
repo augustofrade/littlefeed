@@ -11,12 +11,12 @@ public sealed class Result<T>
     
     private Result(T data)
     {
-        _data = _data;
+        _data = data;
     }
     
     private Result(string? error)
     {
-        _error = _error;
+        _error = error;
     }
 
     public static Result<T> Success(T data) =>  new Result<T>(data);
