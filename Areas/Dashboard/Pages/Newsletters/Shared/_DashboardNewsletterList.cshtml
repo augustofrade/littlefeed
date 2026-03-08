@@ -8,7 +8,7 @@
 }
 else
 {
-    <ul style="list-style: none;">
+    <ul style="list-style: none; padding: 0;">
         @{
             var count = Model.Count;
             for (var index = 0; index < count; index++)
@@ -16,9 +16,9 @@ else
                 var newsletter = Model.ElementAt(index);
                 <li>
                     <article onclick="location.href='@Url.PageLink("/Newsletters/Manage", values: new { area = "Dashboard", slug=@newsletter.Slug })'"
-                             class="text-decoration-none d-flex justify-content-between align-items-center px-3 py-4 rounded-2 clickable-list-item">
+                             class="text-decoration-none d-flex justify-content-between align-items-center px-4 py-2 rounded-2 clickable-list-item">
                         <div>
-                            <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
+                            <span class="h4 d-block text-secondary fw-bold fs-5">@newsletter.Name</span>
                             <div class="d-flex align-items-center gap-4">
                                 <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
                                 <span class="badge bg-primary">Category</span>

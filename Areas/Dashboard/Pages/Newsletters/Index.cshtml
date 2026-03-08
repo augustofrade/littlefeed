@@ -5,42 +5,43 @@
     Layout = "_Layout";
 }
 
-<section>
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="h3">Your newsletters (@Model.NewslettersOwnedByUser.Count)</h2>
-        <a class="btn btn-primary btn-sm" asp-area="Dashboard" asp-page="New">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-            </svg>
-            Create a newsletter
-        </a>
+<section class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h3">Your newsletters (@Model.NewslettersOwnedByUser.Count)</h2>
+            <a class="btn btn-primary btn-sm" asp-area="Dashboard" asp-page="New">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                </svg>
+                Create a newsletter
+            </a>
+        </div>
+        @(await Html.PartialAsync("Shared/_DashboardNewsletterList", Model.NewslettersOwnedByUser))
     </div>
-    @(await Html.PartialAsync("Shared/_DashboardNewsletterList", Model.NewslettersOwnedByUser))
 </section>
 
-<hr class="my-5" />
-
-<section>
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="h3">Latest articles written by you</h2>
+<section class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h3">Latest articles written by you</h2>
+        </div>
+        @if (Model.LatestWrittenArticlesByUser.Count == 0)
+        {
+            <div class="alert alert-info">
+                No articles found
+            </div> 
+        }
+        else
+        {
+            @(await Html.PartialAsync("Shared/_DashboardAuthoredArticleList", Model.LatestWrittenArticlesByUser))
+        }
     </div>
-    @if (Model.LatestWrittenArticlesByUser.Count == 0)
-    {
-        <div class="alert alert-info">
-            No articles found
-        </div> 
-    }
-    else
-    {
-        @(await Html.PartialAsync("Shared/_DashboardAuthoredArticleList", Model.LatestWrittenArticlesByUser))
-    }
 </section>
 
-<hr class="my-5" />
-
-<section>
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="h3">Newsletters you write to (@Model.NewslettersUserCanWriteTo.Count)</h2>
+<section class="card">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h3">Newsletters you write to (@Model.NewslettersUserCanWriteTo.Count)</h2>
+        </div>
     </div>
-    @(await Html.PartialAsync("Shared/_DashboardNewsletterList", Model.NewslettersUserCanWriteTo))
 </section>
