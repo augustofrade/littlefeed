@@ -16,7 +16,7 @@ else
                 var newsletter = Model.ElementAt(index);
                 <li>
                     <article onclick="location.href='@Url.PageLink("/Newsletters/Manage", values: new { area = "Dashboard", slug=@newsletter.Slug })'"
-                             class="text-decoration-none d-flex justify-content-between align-items-center px-3 py-4 rounded-2 newsletter-list-item">
+                             class="text-decoration-none d-flex justify-content-between align-items-center px-3 py-4 rounded-2 clickable-list-item">
                         <div>
                             <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
                             <div class="d-flex align-items-center gap-4">

@@ -21,10 +21,10 @@ html, body {
   text-align: end;
 }
 
-.newsletter-list-item {
+.clickable-list-item {
   cursor: pointer;
 }
 
-.newsletter-list-item:hover {
+.clickable-list-item:hover {
   background-color: #eee;
 }

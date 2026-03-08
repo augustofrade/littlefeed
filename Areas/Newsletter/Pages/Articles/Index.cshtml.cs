@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LittleFeed.Areas.Newsletter.Pages.Article;
+namespace LittleFeed.Areas.Newsletter.Pages.Articles;
 
 public class Index : PageModel
 {

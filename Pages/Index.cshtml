@@ -14,7 +14,7 @@
                 @{
                     var newsletter = Model.NewsletterList.ElementAt(index);
                 }
-                <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 newsletter-list-item">
+                <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 clickable-list-item">
                     <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
                     <div class="d-flex align-items-center gap-4">
                         <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
@@ -25,11 +25,3 @@
         }
     }
 </ul>
-
-@section Styles {
-    <style>
-    .newsletter-list-item:hover {
-        background-color: #eee;
-    }
-    </style>
-}
