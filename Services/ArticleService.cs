@@ -11,11 +11,12 @@ public interface IArticleService
 {
     Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0);
     Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0);
+    Task<List<ListWrittenArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5);
     Task<Article?> GetArticleByIdAsync(Guid id);
     Task<Article?> GetArticleBySlugAsync(string slug);
     Task<bool> ArticleExists(string slug);
-    Task<Result<ArticleDto>> CreateArticleAsync(CreateArticleDto createDto, string userId);
     Task<Result<ArticleDto>> CreateArticleAsDraftAsync(CreateArticleDto createDto, string userId);
+    Task<Result<ArticleDto>> CreatePublishedArticleAsync(CreateArticleDto createDto, string userId);
 }
 
 public class ArticleService(ApplicationDbContext dbContext,
@@ -30,6 +31,17 @@ public class ArticleService(ApplicationDbContext dbContext,
     public Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0)
     {
         return LatestArticlesQuery(count, skip).Where(a => a.NewsletterId == newsletterId).ToListAsync();
+    }
+
+    public Task<List<ListWrittenArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
+    {
+        return dbContext.Articles
+            .AsNoTracking()
+            .Where(a => a.AuthorId == userId)
+            .Take(amount)
+            .OrderBy(a => a.CreatedAt)
+            .Select(a => new ListWrittenArticleDto(a.Slug, a.Title, a.Newsletter.Slug, a.PublishDate))
+            .ToListAsync();
     }
 
     public Task<Article?> GetArticleByIdAsync(Guid id)
@@ -47,18 +59,28 @@ public class ArticleService(ApplicationDbContext dbContext,
         return  dbContext.Articles.AnyAsync(a => a.Slug == slug);
     }
 
-    public async Task<Result<ArticleDto>> CreateArticleAsync(CreateArticleDto createDto, string userId)
+    public Task<Result<ArticleDto>>CreateArticleAsDraftAsync(CreateArticleDto createDto, string userId)
     {
-        var newsletterSlug = await newsletterService.GetNewsletterSlug(createDto.NewsletterId);
+        var article = Article.Create(createDto.Title, createDto.Body, userId, createDto.NewsletterId);
+        return CreateArticleAsync(article, userId);
+    }
+
+    public Task<Result<ArticleDto>> CreatePublishedArticleAsync(CreateArticleDto createDto, string userId)
+    {
+        var article = Article.Create(createDto.Title, createDto.Body, userId, createDto.NewsletterId);
+        article.Publish();
+        return CreateArticleAsync(article, userId);
+    }
+    
+    private async Task<Result<ArticleDto>> CreateArticleAsync(Article article, string userId)
+    {
+        var newsletterSlug = await newsletterService.GetNewsletterSlug(article.NewsletterId);
         if (newsletterSlug == null)
             return Result<ArticleDto>.Failure("Newsletter not found");
         
-        var canUserEditNewsletter = await newsletterService.CanUserEditNewsletter(createDto.NewsletterId, userId);
+        var canUserEditNewsletter = await newsletterService.CanUserEditNewsletter(article.NewsletterId, userId);
         if (!canUserEditNewsletter)
             return Result<ArticleDto>.Failure("You do not have permission to edit this newsletter");
-
-        var excerpt = createDto.Body.Truncate(100);
-        var article = Article.Create(createDto.Title, excerpt, createDto.Body, createDto.IsDraft, createDto.NewsletterId);
         
         var articleExists = await ArticleExists(article.Slug);
         if(articleExists)
@@ -78,12 +100,6 @@ public class ArticleService(ApplicationDbContext dbContext,
         };
         
         return Result<ArticleDto>.Success(dto);
-    }
-
-    public Task<Result<ArticleDto>>CreateArticleAsDraftAsync(CreateArticleDto createDto, string userId)
-    {
-        createDto.IsDraft = true;
-        return CreateArticleAsync(createDto, userId);
     }
 
     private IQueryable<ListArticleDto> LatestArticlesQuery(int count = 0, int skip = 0)

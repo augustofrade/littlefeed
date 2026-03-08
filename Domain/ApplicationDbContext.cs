@@ -64,6 +64,8 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
         // Article
         builder.Entity<Article>(b =>
         {
+            b.HasIndex(a => a.Slug).IsUnique();
+            
             b.Property(a => a.Title)
                 .HasMaxLength(50)
                 .IsRequired();
@@ -72,8 +74,12 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
                 .IsRequired();
             b.Property(a => a.Excerpt)
                 .HasMaxLength(100);
-            b.Property(a => a.IsDraft)
-                .IsRequired();
+
+            b.Property(a => a.AuthorId).IsRequired();
+            b.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(a => a.AuthorId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
         // UserProfile
@@ -97,7 +103,7 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
 
     private void HandleUpdateDates()
     {
-        var entities = ChangeTracker.Entries().Where(e => e.Entity is Entity && (e.State == EntityState.Modified || e.State == EntityState.Added)).ToList();
+        var entities = ChangeTracker.Entries().Where(e => e is { Entity: Entity, State: EntityState.Modified or EntityState.Added }).ToList();
         foreach (var entity in entities)
         {
             ((Entity)entity.Entity).ModifiedAt = DateTime.UtcNow;

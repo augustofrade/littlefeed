@@ -36,7 +36,7 @@ public class Write(INewsletterService newsletterService,
         if (!ModelState.IsValid)
             return SubmitError(ModelStateErrors());
 
-        var result = await articleService.CreateArticleAsync(Input, currentUser.UserId!);
+        var result = await articleService.CreatePublishedArticleAsync(Input, currentUser.UserId!);
         if(!result.IsSuccess)
             return SubmitError(result.Error);
 

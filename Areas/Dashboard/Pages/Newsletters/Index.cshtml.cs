@@ -1,3 +1,4 @@
+using LittleFeed.Dto.Articles;
 using LittleFeed.Dto.Newsletters;
 using LittleFeed.Infrastructure.Identity;
 using LittleFeed.Services;
@@ -12,6 +13,7 @@ public class Index(INewsletterService newsletterService,
 
     public List<ListOwnedNewsletterDto> NewslettersOwnedByUser { get; set; } = [];
     public List<ListOwnedNewsletterDto> NewslettersUserCanWriteTo { get; set; } = [];
+    public List<ListWrittenArticleDto> RecentlyWrittenArticles { get; set; } = [];
     
     public async Task OnGetAsync()
     {
