@@ -93,20 +93,21 @@ public class ArticleService(ApplicationDbContext dbContext,
         return Result<ArticleDto>.Success(dto);
     }
 
-    private IQueryable<ListArticleDto> LatestArticlesQuery(int count = 0, int skip = 0)
+    private IQueryable<ListArticleDto> LatestArticlesQuery(int page = 0, int skip = 0)
     {
         return dbContext.Articles
             .AsNoTracking()
-            .OrderByDescending(a => a.CreatedAt)
-            .Skip(count * skip)
-            .Where(a => !a.IsDraft)
-            .Take(count)
+            .Where(a => a.PublishDate != null)
+            .OrderByDescending(a => a.PublishDate)
+            .Skip(page * skip)
+            .Take(page)
             .Select(a => new ListArticleDto
             {
                 Title =  a.Title,
                 Slug =   a.Slug,
-                Excerpt = a.Excerpt,
-                CreatedAt = a.CreatedAt,
+                PublishDate =  a.PublishDate!.Value,
+                NewsletterSlug = a.Newsletter.Slug,
+                NewsletterName = a.Newsletter.Name,
                 NewsletterId = a.NewsletterId
             });
     }

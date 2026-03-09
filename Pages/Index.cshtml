@@ -3,25 +3,84 @@
 
 @{
     Layout = "_Layout";
+    var userIsAuthenticated = User.Identity is { IsAuthenticated: true }; 
 }
 
-<ul style="list-style: none;">
-    @{
-        var count = Model.NewsletterList.Count;
-        for(var index = 0; index < count; index++)
-        {
-            <li>
-                @{
-                    var newsletter = Model.NewsletterList.ElementAt(index);
-                }
-                <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 clickable-list-item">
-                    <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
-                    <div class="d-flex align-items-center gap-4">
-                        <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
-                        <span class="badge bg-primary">Category</span>
-                    </div>
-                </a>
-            </li>
-        }
+<section class="alert alert-warning text-center text-decoration-underline fw-bold">
+    @if (userIsAuthenticated)
+    {
+        <span>Create a newsletter for free</span>
     }
-</ul>
+    else
+    {
+        <span>Sign up and create a newsletter for free!</span>
+    }
+</section>
+
+<header class="text-center mb-5">
+    <h1 class="text-decoration-underline">LittleFeed</h1>
+    <h2>Find your next read here</h2>
+</header>
+
+<section class="pt-5 pb-5 mb-5 article-section">
+    <div class="text-center mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+            <path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z"/>
+            <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/>
+        </svg>
+    <h3>Latest Articles</h3>
+    </div>
+    <ul style="list-style: none; padding: 0">
+        @{
+            var count = Model.ArticleList.Count;
+            for (var index = 0; index < count; index++)
+            {
+                <li>
+                    @{
+                        var article = Model.ArticleList.ElementAt(index);
+                        @(await Html.PartialAsync("Shared/_ListArticleItem", article))
+                    }
+                </li>
+            }
+        }
+    </ul>
+</section>
+
+<section class="newsletter-section">
+    <div class="text-center mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
+            <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7s-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
+            <path d="M4 3h4v1H6.646A4 4 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
+        </svg>
+        <h3>Newsletters you might like</h3>
+    </div>
+    <ul style="list-style: none; padding: 0">
+        @{
+            count = Model.NewsletterList.Count;
+            for(var index = 0; index < count; index++)
+            {
+                <li>
+                    @{
+                        var newsletter = Model.NewsletterList.ElementAt(index);
+                    }
+                    <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 clickable-list-item">
+                        <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
+                        <div class="d-flex align-items-center gap-4">
+                            <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
+                            <span class="badge bg-primary">Category</span>
+                        </div>
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</section>
+
+@section Styles
+{
+    <style>
+        .article-section {
+            border-bottom: 2px dashed #ccc;
+        }
+    </style>
+}
