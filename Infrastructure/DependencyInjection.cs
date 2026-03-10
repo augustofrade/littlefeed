@@ -3,6 +3,7 @@ using LittleFeed.Common;
 using LittleFeed.Infrastructure.Articles;
 using LittleFeed.Infrastructure.Auth;
 using LittleFeed.Infrastructure.Newsletters;
+using LittleFeed.Services.Syndication;
 
 namespace LittleFeed.Infrastructure;
 
@@ -16,7 +17,8 @@ public static class DependencyInjection
                 .AddNewsletterServices()
                 .AddArticleServices()
                 .AddScoped<ICurrentUser, CurrentUser>()
-                .AddScoped<IAccountService, AccountService>();
+                .AddScoped<IAccountService, AccountService>()
+                .AddScoped<NewsletterSyndication>();
         }
     }
 }
