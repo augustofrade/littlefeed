@@ -3,18 +3,20 @@
 
 @{
     Layout = "_Layout";
-    var userIsAuthenticated = User.Identity is { IsAuthenticated: true }; 
+    var userIsAuthenticated = User.Identity is { IsAuthenticated: true };
 }
 
-<section class="alert alert-warning text-center text-decoration-underline fw-bold">
-    @if (userIsAuthenticated)
-    {
-        <span>Create a newsletter for free</span>
-    }
-    else
-    {
-        <span>Sign up and create a newsletter for free!</span>
-    }
+<section class="alert alert-warning text-center text-decoration-underline fw-bold mb-5">
+    <a asp-area="Dashboard" asp-page="/Newsletters/New" class="text-reset">
+        @if (userIsAuthenticated)
+        {
+            <span>Do you want your own newsletter for free? Click here to create one!</span>
+        }
+        else
+        {
+            <span>Sign up and create a newsletter for free!</span>
+        }
+    </a>
 </section>
 
 <header class="text-center mb-5">
@@ -79,6 +81,10 @@
 @section Styles
 {
     <style>
+        .newsletter-cta-alert {
+            cursor: pointer;
+        }
+        
         .article-section {
             border-bottom: 2px dashed #ccc;
         }
