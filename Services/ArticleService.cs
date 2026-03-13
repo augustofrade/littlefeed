@@ -45,11 +45,13 @@ public class ArticleService(ApplicationDbContext dbContext,
     public Task<ArticleDetailsDto?> GetArticleBySlugAsync(string articleSlug, string newsletterSlug)
     {
         return dbContext.Articles
-            .Where(a => a.Slug == articleSlug && a.Newsletter.Slug == newsletterSlug)
+            .Where(a => a.Slug == articleSlug && a.Newsletter.Slug == newsletterSlug && a.PublishDate != null)
             .Select( a => new ArticleDetailsDto
             {
                 Title =  a.Title,
                 Body = a.Body,
+                PublishDate = a.PublishDate!.Value,
+                ModificationDate = a.ModifiedAt,
                 Newsletter = new NewsletterIdentificationDto(a.Newsletter.Name, a.Newsletter.Slug),
                 Author = dbContext.UserProfiles
                     .Where(up => up.UserId == a.AuthorId)
