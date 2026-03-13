@@ -1,5 +1,10 @@
 ﻿@using System.Security.Claims
-@using Microsoft.IdentityModel.Tokens
+
+@{
+    var newsletterSlug = ViewContext.RouteData.Values["newsletterSlug"]?.ToString();
+    var articleSlug = ViewContext.RouteData.Values["articleSlug"]?.ToString();
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +18,28 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+    <section class="bg-secondary px-3 py-1 text-white d-none d-md-block">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                @if (newsletterSlug != null && articleSlug != null)
+                {
+                    <span>
+                        /n/<a asp-area="Newsletter" asp-page="/Details" asp-route-slug="@newsletterSlug"
+                           class="text-reset text-decoration-none fw-bold">@newsletterSlug</a>/a/@articleSlug
+                    </span>
+                }
+            </div>
+            <div class="col-12 col-md-6 text-end">
+                <a href="https://github.com/augustofrade" class="text-decoration-none text-reset">
+                    Made with
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                    </svg>
+                        by augustofrade
+                </a>
+            </div>
+        </div>
+    </section>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom mb-3">
             <div class="container">
@@ -36,8 +63,8 @@
                     <div class="d-flex gap-2">
                         @if (User.Identity is { IsAuthenticated: false })
                         {
-                            <a class="btn btn-primary btn-sm" asp-area="Account" asp-page="Login">Login</a>
-                            <a class="btn btn-outline-primary btn-sm" asp-area="Account" asp-page="Register">Create Account</a>
+                            <a class="btn btn-primary btn-sm" asp-area="Account" asp-page="/Login">Login</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-area="Account" asp-page="/Register">Create Account</a>
                         }
                         else
                         {
