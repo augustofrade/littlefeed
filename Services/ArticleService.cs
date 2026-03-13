@@ -4,6 +4,8 @@ using LittleFeed.Common.Results;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Articles;
+using LittleFeed.Dto.Newsletters;
+using LittleFeed.Dto.Reader;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleFeed.Services;
@@ -40,9 +42,21 @@ public class ArticleService(ApplicationDbContext dbContext,
         return dbContext.Articles.FindAsync(id).AsTask();
     }
 
-    public Task<Article?> GetArticleBySlugAsync(string slug)
+    public Task<ArticleDetailsDto?> GetArticleBySlugAsync(string articleSlug, string newsletterSlug)
     {
-        return  dbContext.Articles.FirstOrDefaultAsync(a => a.Slug == slug);
+        return dbContext.Articles
+            .Where(a => a.Slug == articleSlug && a.Newsletter.Slug == newsletterSlug)
+            .Select( a => new ArticleDetailsDto
+            {
+                Title =  a.Title,
+                Body = a.Body,
+                Newsletter = new NewsletterIdentificationDto(a.Newsletter.Name, a.Newsletter.Slug),
+                Author = dbContext.UserProfiles
+                    .Where(up => up.UserId == a.AuthorId)
+                    .Select(up => new UserIdentificationDto(up.DisplayName, up.Slug))
+                    .FirstOrDefault()!
+            })
+            .FirstOrDefaultAsync();
     }
 
     public Task<bool> ArticleExists(string slug)
@@ -84,7 +98,6 @@ public class ArticleService(ApplicationDbContext dbContext,
         {
             Title =  article.Title,
             Slug = article.Slug,
-            Excerpt = article.Excerpt,
             Body = article.Body,
             IsDraft = article.IsDraft,
             NewsletterSlug =  newsletterSlug

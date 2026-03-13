@@ -2,6 +2,7 @@ using LittleFeed.Application.Newsletters;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Newsletters;
+using LittleFeed.Dto.Reader;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleFeed.Services;
@@ -20,7 +21,7 @@ public class NewsletterService(ApplicationDbContext dbContext,
                 n.CreatedAt,
                 dbContext.UserProfiles
                     .Where(up => up.UserId == n.OwnerId)
-                    .Select(up => new NewsletterOwnerDto(up.UserId, up.Slug, up.DisplayName))
+                    .Select(up => new UserIdentificationDto(up.DisplayName, up.Slug))
                     .First()))
             .ToListAsync();
     }
