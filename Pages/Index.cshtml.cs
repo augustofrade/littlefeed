@@ -14,6 +14,6 @@ public class Index(INewsletterQueries newsletterQueries, IArticleQueries article
     public async Task OnGetAsync()
     {
         NewsletterList = await newsletterQueries.GetNewsletters();
-        ArticleList = await articleQueries.GetLatestArticlesAsync(10);
+        ArticleList = await articleQueries.GetLatestPublishedArticlesAsync(10);
     }
 }

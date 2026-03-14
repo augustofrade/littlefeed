@@ -16,14 +16,32 @@ public class ArticleService(ApplicationDbContext dbContext,
     INewsletterAccess newsletterAccess,
     ILogger<ArticleService> logger) : IArticleQueries, IArticleCommands
 {
-    public Task<List<ListArticleDto>> GetLatestArticlesAsync(int count, int skip = 0)
+    public Task<List<ListArticleDto>> GetLatestPublishedArticlesAsync(int amount, int skip = 0)
     {
-        return LatestArticlesQuery(count, skip).ToListAsync();
+        return LatestPublishedArticlesQuery(amount, skip, null)
+            .Select(a => new ListArticleDto
+            {
+                Title =  a.Title,
+                Slug =   a.Slug,
+                PublishDate =  a.PublishDate!.Value,
+                NewsletterSlug = a.Newsletter.Slug,
+                NewsletterName = a.Newsletter.Name,
+                NewsletterId = a.NewsletterId
+            })
+            .ToListAsync();
     }
     
-    public Task<List<ListArticleDto>> GetLatestArticlesFromNewsletterAsync(Guid newsletterId, int count, int skip = 0)
+    public Task<List<ListArticlePreviewDto>> GetLatestPublishedArticlesFromNewsletterAsync(Guid newsletterId, int amount, int skip = 0)
     {
-        return LatestArticlesQuery(count, skip).Where(a => a.NewsletterId == newsletterId).ToListAsync();
+        return LatestPublishedArticlesQuery(amount, skip, newsletterId)
+            .Select(a => new ListArticlePreviewDto(
+                Title: a.Title,
+                Slug: a.Slug,
+                Excerpt:  a.Excerpt,
+                PublishDate: a.PublishDate!.Value,
+                Newsletter: new NewsletterIdentificationDto(a.Newsletter.Name, a.Newsletter.Slug)
+                ))
+            .ToListAsync();
     }
 
     public Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
@@ -108,22 +126,18 @@ public class ArticleService(ApplicationDbContext dbContext,
         return Result<ArticleDto>.Success(dto);
     }
 
-    private IQueryable<ListArticleDto> LatestArticlesQuery(int page = 0, int skip = 0)
+    private IQueryable<Article> LatestPublishedArticlesQuery(int page, int skip, Guid? newsletterId)
     {
-        return dbContext.Articles
+        var query = dbContext.Articles
             .AsNoTracking()
-            .Where(a => a.PublishDate != null)
-            .OrderByDescending(a => a.PublishDate)
+            .Where(a => a.PublishDate != null);
+        
+        if(newsletterId != null)
+            query = query.Where(a => a.NewsletterId == newsletterId);
+        
+        return query.OrderByDescending(a => a.PublishDate)
             .Skip(page * skip)
-            .Take(page)
-            .Select(a => new ListArticleDto
-            {
-                Title =  a.Title,
-                Slug =   a.Slug,
-                PublishDate =  a.PublishDate!.Value,
-                NewsletterSlug = a.Newsletter.Slug,
-                NewsletterName = a.Newsletter.Name,
-                NewsletterId = a.NewsletterId
-            });
+            .Take(page);
+
     }
 }
