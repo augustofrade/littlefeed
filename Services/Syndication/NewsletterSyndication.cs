@@ -30,11 +30,13 @@ public class NewsletterSyndication(ApplicationDbContext dbContext, INewsletterQu
             .ToListAsync(ct);
 
         var feed = new SyndicationFeed(newsletter.Name, newsletter.Description, new Uri(newsletterUrl),
-            syndicationItems);
-        
-        feed.LastUpdatedTime = syndicationItems.Count > 0
-            ? syndicationItems.Max(i => i.LastUpdatedTime)
-            : DateTimeOffset.UtcNow;
+            syndicationItems)
+        {
+            LastUpdatedTime = syndicationItems.Count > 0
+                ? syndicationItems.Max(i => i.LastUpdatedTime)
+                : DateTimeOffset.UtcNow,
+            Authors = { new SyndicationPerson { Name = newsletter.Author} }
+        };
 
         var settings = new XmlWriterSettings
         {
