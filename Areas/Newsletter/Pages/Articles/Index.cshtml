@@ -4,7 +4,7 @@
 @{
     Layout = "_Layout";
     var data = Model.Article;
-    var publishDate = data.PublishDate.ToLocalTime();
+    var publishDate = data.PublishDate.ToLocalTime().ToString("MMM dd, yyyy 'at' HH:mm");
 }
 
 <section class="mb-5 text-center pb-5">
@@ -23,7 +23,7 @@
                class="fw-bold text-black text-decoration-none">@data.Author.Name</a>
         </span>
         <span class="d-block">
-            @publishDate.ToString("MMM dd, yyyy 'at' HH:mm")
+            @publishDate
         </span>
     </div>
 </section>

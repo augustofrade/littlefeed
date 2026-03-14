@@ -3,21 +3,9 @@
 
 @{
     Layout = "_Layout";
-    var userIsAuthenticated = User.Identity is { IsAuthenticated: true };
 }
 
-<section class="alert alert-warning text-center text-decoration-underline fw-bold mb-5">
-    <a asp-area="Dashboard" asp-page="/Newsletters/New" class="text-reset">
-        @if (userIsAuthenticated)
-        {
-            <span>Do you want your own newsletter for free? Click here to create one!</span>
-        }
-        else
-        {
-            <span>Sign up and create a newsletter for free!</span>
-        }
-    </a>
-</section>
+@(await Html.PartialAsync("Shared/_CreateNewsletterCta"))
 
 <header class="text-center mb-5">
     <h1 class="text-decoration-underline">LittleFeed</h1>
@@ -34,14 +22,10 @@
     </div>
     <ul style="list-style: none; padding: 0">
         @{
-            var count = Model.ArticleList.Count;
-            for (var index = 0; index < count; index++)
+            foreach (var article in Model.ArticleList)
             {
                 <li>
-                    @{
-                        var article = Model.ArticleList.ElementAt(index);
-                        @(await Html.PartialAsync("Shared/_ListArticleItem", article))
-                    }
+                    @(await Html.PartialAsync("Shared/_ListArticleItem", article))
                 </li>
             }
         }
@@ -67,20 +51,10 @@
     </div>
     <ul style="list-style: none; padding: 0">
         @{
-            count = Model.NewsletterList.Count;
-            for(var index = 0; index < count; index++)
+            foreach (var newsletter in Model.NewsletterList)
             {
                 <li>
-                    @{
-                        var newsletter = Model.NewsletterList.ElementAt(index);
-                    }
-                    <a asp-area="Newsletter" asp-page="Details" asp-route-slug="@newsletter.Slug" class="text-decoration-none d-block px-3 py-4 rounded-2 clickable-list-item">
-                        <span class="h4 d-block text-secondary fw-bold">@newsletter.Name</span>
-                        <div class="d-flex align-items-center gap-4">
-                            <span class="text-muted">@newsletter.CreatedAt.ToLocalTime().ToShortDateString()</span>
-                            <span class="badge bg-secondary-subtle text-dark">Technology</span>
-                        </div>
-                    </a>
+                    @(await Html.PartialAsync("Shared/_ListNewsletterItem", newsletter))
                 </li>
             }
         }
@@ -99,10 +73,6 @@
 @section Styles
 {
     <style>
-        .newsletter-cta-alert {
-            cursor: pointer;
-        }
-        
         .article-section {
             border-bottom: 2px dashed #ccc;
         }

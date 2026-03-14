@@ -1,0 +1,12 @@
+@model LittleFeed.Dto.Newsletters.ListNewsletterDto
+
+<a asp-area="Newsletter" asp-page="Details" asp-route-slug="@Model.Slug"
+   class="text-decoration-none">
+    <article class="px-4 py-2 rounded-2 clickable-list-item">
+        <div class="d-flex align-items-center gap-4">
+            <span class="h4 d-block text-secondary fw-bold fs-5 mb-0">@Model.Name</span>
+            <span class="text-muted">@Model.CreatedAt.Year</span>
+        </div>
+        <span class="badge bg-secondary-subtle text-dark">Technology</span>
+    </article>
+</a>

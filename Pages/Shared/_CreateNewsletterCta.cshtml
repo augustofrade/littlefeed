@@ -1,0 +1,13 @@
+<section class="alert alert-warning text-center text-decoration-underline fw-bold mb-5">
+    <a asp-area="Dashboard" asp-page="/Newsletters/New" class="text-reset">
+        @if (User.Identity is { IsAuthenticated: true })
+        {
+            
+            <span>Do you want your own newsletter for free? Click here to create one!</span>
+        }
+        else
+        {
+            <span>Sign up and create a newsletter for free!</span>
+        }
+    </a>
+</section>
