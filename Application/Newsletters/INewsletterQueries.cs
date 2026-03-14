@@ -8,4 +8,5 @@ public interface INewsletterQueries
     Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
     Task<NewsletterDto?> GetNewsletterBySlug(string slug);
     Task<string?> GetNewsletterSlug(Guid id);
+    Task<bool> ExistsBySlug(string slug);
 }

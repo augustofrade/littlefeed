@@ -35,7 +35,7 @@ public class NewsletterSyndication(ApplicationDbContext dbContext, INewsletterQu
             LastUpdatedTime = syndicationItems.Count > 0
                 ? syndicationItems.Max(i => i.LastUpdatedTime)
                 : DateTimeOffset.UtcNow,
-            Authors = { new SyndicationPerson { Name = newsletter.Author} }
+            Authors = { new SyndicationPerson { Name = newsletter.Author.Name} }
         };
 
         var settings = new XmlWriterSettings

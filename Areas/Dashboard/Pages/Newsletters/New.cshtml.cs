@@ -22,11 +22,11 @@ public class New(INewsletterCommands newsletterCommands,
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid) return Page();
-        
         var currentUserId = userManager.GetUserId(User);
         
         logger.LogInformation("Received Newsletter POST request");
-        var newsletter = await newsletterCommands.CreateNewsletter(Input, currentUserId!);
-        return RedirectToPage("/Details",  new { area = "Newsletter", slug = newsletter.Slug });
+        var createResult = await newsletterCommands.CreateNewsletter(Input, currentUserId!);
+        // TODO: handle result
+        return RedirectToPage("/Details",  new { area = "Newsletter", slug = createResult.Data.Slug });
     }
 }
