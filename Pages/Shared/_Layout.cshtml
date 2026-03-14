@@ -25,12 +25,12 @@
                 {
                     <span>
                         /n/<a asp-area="Newsletter" asp-page="/Details" asp-route-slug="@newsletterSlug"
-                           class="text-reset text-decoration-none fw-bold">@newsletterSlug</a>/a/@articleSlug
+                           class="text-reset text-decoration-hover fw-bold">@newsletterSlug</a>/a/@articleSlug
                     </span>
                 }
             </div>
             <div class="col-12 col-md-6 text-end">
-                <a href="https://github.com/augustofrade" class="text-decoration-none text-reset">
+                <a href="https://github.com/augustofrade" class="text-reset text-decoration-hover">
                     Made with
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
@@ -51,13 +51,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Featured</a>
+                            <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Index">Featured</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Newsletters</a>
+                            <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Index">Newsletters</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                     </ul>
                     <div class="d-flex gap-2">
@@ -95,9 +95,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted bg-white">
         <div class="container">
-            &copy; 2026 - LittleFeed - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; @DateTime.UtcNow.Year - LittleFeed - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
