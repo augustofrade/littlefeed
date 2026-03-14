@@ -4,6 +4,7 @@ using LittleFeed.Common.Results;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Articles;
+using LittleFeed.Dto.Common;
 using LittleFeed.Dto.Newsletters;
 using LittleFeed.Dto.Reader;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,9 @@ public class ArticleService(ApplicationDbContext dbContext,
     INewsletterAccess newsletterAccess,
     ILogger<ArticleService> logger) : IArticleQueries, IArticleCommands
 {
-    public Task<List<ListArticleDto>> GetLatestPublishedArticlesAsync(int amount, int skip = 0)
+    public async Task<ListPagination<ListArticleDto>> GetLatestPublishedArticlesAsync(int amount, int page = 1)
     {
-        return LatestPublishedArticlesQuery(amount, skip, null)
+        var articles = await LatestPublishedArticlesQuery(amount, page, null)
             .Select(a => new ListArticleDto
             {
                 Title =  a.Title,
@@ -29,11 +30,13 @@ public class ArticleService(ApplicationDbContext dbContext,
                 NewsletterId = a.NewsletterId
             })
             .ToListAsync();
+
+        return new ListPagination<ListArticleDto>(articles, amount, page);
     }
     
-    public Task<List<ListArticlePreviewDto>> GetLatestPublishedArticlesFromNewsletterAsync(Guid newsletterId, int amount, int skip = 0)
+    public async Task<ListPagination<ListArticlePreviewDto>> GetLatestPublishedArticlesFromNewsletterAsync(Guid newsletterId, int amount, int page = 1)
     {
-        return LatestPublishedArticlesQuery(amount, skip, newsletterId)
+        var articles = await LatestPublishedArticlesQuery(amount, page, newsletterId)
             .Select(a => new ListArticlePreviewDto(
                 Title: a.Title,
                 Slug: a.Slug,
@@ -42,6 +45,8 @@ public class ArticleService(ApplicationDbContext dbContext,
                 Newsletter: new NewsletterIdentificationDto(a.Newsletter.Name, a.Newsletter.Slug)
                 ))
             .ToListAsync();
+        
+        return new ListPagination<ListArticlePreviewDto>(articles, amount, page);
     }
 
     public Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
@@ -126,8 +131,10 @@ public class ArticleService(ApplicationDbContext dbContext,
         return Result<ArticleDto>.Success(dto);
     }
 
-    private IQueryable<Article> LatestPublishedArticlesQuery(int page, int skip, Guid? newsletterId)
+    private IQueryable<Article> LatestPublishedArticlesQuery(int amount, int page, Guid? newsletterId)
     {
+        if(page > 0) page--;
+        
         var query = dbContext.Articles
             .AsNoTracking()
             .Where(a => a.PublishDate != null);
@@ -136,8 +143,8 @@ public class ArticleService(ApplicationDbContext dbContext,
             query = query.Where(a => a.NewsletterId == newsletterId);
         
         return query.OrderByDescending(a => a.PublishDate)
-            .Skip(page * skip)
-            .Take(page);
+            .Skip(page * amount)
+            .Take(amount);
 
     }
 }
