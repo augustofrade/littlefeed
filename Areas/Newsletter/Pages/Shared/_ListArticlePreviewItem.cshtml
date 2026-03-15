@@ -1,0 +1,20 @@
+@model Dto.Articles.ListArticlePreviewDto
+
+@{
+    var publishDateTime = Model.PublishDate.ToLocalTime().ToString("MMM dd, yyyy 'at' HH:mm");
+}
+
+<a asp-area="Newsletter" asp-page="/Articles/Index" asp-route-newsletterSlug="@Model.Newsletter.Slug" asp-route-articleSlug="@Model.Slug"
+   class="text-decoration-none">
+    <article class="px-4 py-2 rounded-2 clickable-list-item">
+        <div class="d-flex align-items-md-center gap-md-4 flex-column flex-md-row mb-1 mb-md-0">
+            <span class="h4 d-block text-secondary fw-bold fs-5 mb-0">@Model.Title</span>
+            <span class="text-muted">@publishDateTime</span>
+        </div>
+        <span class="badge bg-secondary-subtle text-dark">Technology</span>
+        <span class="text-dark">
+            @Model.Newsletter.Name
+        </span>
+        
+    </article>
+</a>

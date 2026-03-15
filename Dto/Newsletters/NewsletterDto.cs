@@ -11,5 +11,4 @@ public record NewsletterDto
     public required string Slug { get; init; }
     public required string Description { get; init; }
     public required DateTime CreatedAt { get; init; }
-    public List<ListArticlePreviewDto> Articles { get; set; } = [];
 }
