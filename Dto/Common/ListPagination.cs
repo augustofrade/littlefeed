@@ -1,3 +1,3 @@
 namespace LittleFeed.Dto.Common;
 
-public record ListPagination<T>(List<T> Data, int PageAmount, int Page);
+public record ListPagination<T>(List<T> Data, int PageAmount, int Page, bool HasNextPage = false);

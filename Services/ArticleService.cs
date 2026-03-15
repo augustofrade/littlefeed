@@ -30,8 +30,12 @@ public class ArticleService(ApplicationDbContext dbContext,
                 NewsletterId = a.NewsletterId
             })
             .ToListAsync();
+        
+        var hasNextPage = articles.Count > amount; 
+        if(articles.Count > amount)
+            articles.RemoveAt(articles.Count - 1);
 
-        return new ListPagination<ListArticleDto>(articles, amount, page);
+        return new ListPagination<ListArticleDto>(articles, amount, page, hasNextPage);
     }
     
     public async Task<ListPagination<ListArticlePreviewDto>> GetLatestPublishedArticlesFromNewsletterAsync(Guid newsletterId, int amount, int page = 1)
@@ -46,7 +50,11 @@ public class ArticleService(ApplicationDbContext dbContext,
                 ))
             .ToListAsync();
         
-        return new ListPagination<ListArticlePreviewDto>(articles, amount, page);
+        var hasNextPage = articles.Count > amount; 
+        if(articles.Count > amount)
+            articles.RemoveAt(articles.Count - 1);
+
+        return new ListPagination<ListArticlePreviewDto>(articles, amount, page, hasNextPage);
     }
 
     public Task<List<ListAuthoredArticleDto>> GetLatestArticlesWrittenByUserAsync(string userId, int amount = 5)
@@ -144,7 +152,7 @@ public class ArticleService(ApplicationDbContext dbContext,
         
         return query.OrderByDescending(a => a.PublishDate)
             .Skip(page * amount)
-            .Take(amount);
+            .Take(amount + 1);
 
     }
 }

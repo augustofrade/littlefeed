@@ -14,7 +14,7 @@ public class Details(INewsletterQueries newsletterQueries,
 {
     public required NewsletterDto Newsletter { get; set; }
     public NewsletterArticlePaginationDto PublishedNewsletterArticles { get;  private set; }
-    private const int PageSize = 10;
+    private const int PageSize = 2;
 
     public async Task<IActionResult> OnGetAsync(string? slug, int pageNumber = 1)
     {
