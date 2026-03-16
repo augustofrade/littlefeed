@@ -7,30 +7,41 @@
     var newsletterUrl = Url.PageLink("/Details", values: new { area = "Newsletter", slug = newsletter.Slug });
 }
 
-<section class="mb-5">
+<div id="subscribe-result"></div>
+
+<section class="mb-5 pb-5">
+    <div class="btn btn-light btn-sm"
+          data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Click to copy"
+          onclick="navigator.clipboard.writeText('@newsletterUrl')"
+    >
+        [n/@newsletter.Slug]
+    </div>
     <h1>@newsletter.Name</h1>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <span class="d-flex align-items-center gap-2 text-muted">
-            <span class="btn btn-light btn-sm"
-                  data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Click to copy"
-                  onclick="navigator.clipboard.writeText('@newsletterUrl')"
-            >
-                [n/@newsletter.Slug]
-            </span>
             <span>
                 Created by
                 <a asp-page="Users" asp-route-userProfileSlug="@newsletter.Author.Slug" class="fw-bold text-reset text-decoration-hover">
                     @newsletter.Author.Name</a>
-                at @newsletter.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy 'at' HH:mm")
+                on @newsletter.CreatedAt.ToLocalTime().ToString("MMM, yyyy")
             </span>
         </span>
-        <div>
+        <div class="d-flex align-items-center gap-4">
             <a class="btn btn-light btn-sm" asp-page="/Feed" asp-route-slug="@newsletter.Slug">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
                 </svg>
                 Feed
             </a>
+            <form 
+                hx-post="?handler=Subscribe"
+                hx-vals='{"newsletterSlug": "@Model.Newsletter.Slug"}'
+                hx-target="#subscribe-result"
+                hx-swap="innerHTML"
+                hx-disabled-elt="#subscribe-btn">
+                @(await Html.PartialAsync("Shared/_SubscribeToNewsletterButton", false))
+                @Html.AntiForgeryToken()
+            </form>
         </div>
     </div>
     <div>
@@ -38,7 +49,16 @@
     </div>
 </section>
 
-
-<section id="article-list">
-    @(await Html.PartialAsync("Shared/_NewsletterPaginatedArticleList", Model.PublishedNewsletterArticles))
+<section class="articles">
+    <h3 class="mb-3">Articles</h3>
+    <div id="article-list">
+        @if (Model.PublishedNewsletterArticles.PageHasArticles)
+        {
+            @(await Html.PartialAsync("Shared/_NewsletterPaginatedArticleList", Model.PublishedNewsletterArticles))
+        }
+        else
+        {
+            <div class="alert alert-info">Newsletter hasn't published any articles yet</div>
+        }
+    </div>
 </section>

@@ -1,5 +1,6 @@
 using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
+using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
 using LittleFeed.Dto.Common;
 using LittleFeed.Dto.Newsletters;
@@ -10,6 +11,7 @@ namespace LittleFeed.Areas.Newsletter.Pages;
 
 public class Details(INewsletterQueries newsletterQueries,
     IArticleQueries articleQueries,
+    ICurrentUser currentUser,
     ILogger<Details> logger)  : PageModel
 {
     public required NewsletterDto Newsletter { get; set; }
@@ -42,16 +44,24 @@ public class Details(INewsletterQueries newsletterQueries,
     {
         
         if (newsletterSlug is null)
-            return Content("<div class='alert alert-error'>Forbidden</div>", "text/html");
+            return Content("<div class='alert alert-danger'>Forbidden</div>", "text/html");
         
         var newsletter = await newsletterQueries.GetNewsletterBySlug(newsletterSlug);
         if (newsletter is null)
-            return Content("<div class='alert alert-error'>Forbidden</div>", "text/html");
+            return Content("<div class='alert alert-danger'>Forbidden</div>", "text/html");
         
         var pagination = await GetLatestArticles(newsletter.Id, pageNumber);
         var dto = new NewsletterArticlePaginationDto(pagination, newsletterSlug);
         
         return Partial("Shared/_NewsletterPaginatedArticleList", dto);
+    }
+
+    public IActionResult OnPostSubscribe(string newsletterSlug)
+    {
+        if (!currentUser.IsAuthenticated)
+            return Partial("Shared/_SubscribeUnauthenticatedError");
+        
+        return Partial("Shared/_SubscribeSuccess", true); 
     }
 
     private Task<ListPagination<ListArticlePreviewDto>> GetLatestArticles(Guid newsletterId, int page = 1)
@@ -60,4 +70,7 @@ public class Details(INewsletterQueries newsletterQueries,
     }
 }
 
-public record NewsletterArticlePaginationDto(ListPagination<ListArticlePreviewDto> Pagination, string NewsletterSlug);
+public record NewsletterArticlePaginationDto(ListPagination<ListArticlePreviewDto> Pagination, string NewsletterSlug)
+{
+    public bool PageHasArticles => Pagination.Data.Count > 0;
+}
