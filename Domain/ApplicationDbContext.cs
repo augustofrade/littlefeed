@@ -100,8 +100,14 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
             b.HasKey(s => s.Id);
 
             b.Property(s => s.Id).ValueGeneratedNever();
-            
-            b.HasIndex(s => new { s.NewsletterId, s.UserId });
+
+            b.HasIndex(s => new { s.NewsletterId, s.UserId })
+                .IsUnique()
+                .HasFilter("[UserId] IS NOT NULL");
+
+            b.HasIndex(s => new { s.NewsletterId, s.GuestEmail })
+                .IsUnique()
+                .HasFilter("[GuestEmail] IS NOT NULL");
 
             b.Ignore(s => s.IsSubscribed);
             
