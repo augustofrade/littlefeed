@@ -13,6 +13,7 @@ public class Newsletter : Entity
 
     public ICollection<Article> Articles { get; private init; } = [];
     public ICollection<NewsletterMember> Members { get; private init; } = [];
+    public ICollection<NewsletterSubscription> Subscriptions { get; private init; } = [];
 
     private Newsletter() { }
 
