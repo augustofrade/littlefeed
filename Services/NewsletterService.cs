@@ -89,6 +89,15 @@ public class NewsletterService(ApplicationDbContext dbContext,
             .FirstOrDefaultAsync();
     }
 
+    public Task<Guid?> GetNewsletterIdBySlug(string slug)
+    {
+        return dbContext.Newsletters
+            .AsNoTracking()
+            .Where(n => n.Slug == slug)
+            .Select(n => (Guid?)n.Id)
+            .FirstOrDefaultAsync();
+    }
+
     public Task<bool> ExistsBySlug(string slug)
     {
         return dbContext.Newsletters.AnyAsync(n => n.Slug == slug);

@@ -1,5 +1,24 @@
 namespace LittleFeed.Common.Results;
 
+public sealed class Result
+{
+    private readonly string? _error;
+    public bool IsSuccess => _error == null;
+
+    public string Error => _error ?? string.Empty;
+    
+    private Result() { }
+    
+    private Result(string? error)
+    {
+        _error = error;
+    }
+
+    public static Result Success() => new Result();
+    
+    public static Result Failure(string error) => new Result(error);
+}
+
 public sealed class Result<T>
 {
     private readonly T? _data;
@@ -19,7 +38,7 @@ public sealed class Result<T>
         _error = error;
     }
 
-    public static Result<T> Success(T data) =>  new Result<T>(data);
+    public static Result<T> Success(T data) => new Result<T>(data);
     
-    public static Result<T> Failure(string error) =>  new Result<T>(error);
+    public static Result<T> Failure(string error) => new Result<T>(error);
 }
