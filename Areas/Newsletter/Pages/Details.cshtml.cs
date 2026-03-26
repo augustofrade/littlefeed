@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Common;
@@ -11,10 +12,15 @@ namespace LittleFeed.Areas.Newsletter.Pages;
 
 public class Details(INewsletterQueries newsletterQueries,
     IArticleQueries articleQueries,
+    INewsletterSubscriptionQueries  newsletterSubscriptionQueries,
+    INewsletterSubscriptionCommands  newsletterSubscriptionCommands,
     ICurrentUser currentUser,
     ILogger<Details> logger)  : PageModel
 {
     public required NewsletterDto Newsletter { get; set; }
+    
+    public required NewsletterSubscriptionButtonsDto NewsletterSubscriptionButtons { get; set; } 
+        
     public NewsletterArticlePaginationDto PublishedNewsletterArticles { get;  private set; }
     private const int PageSize = 2;
 
@@ -36,13 +42,15 @@ public class Details(INewsletterQueries newsletterQueries,
         
         PublishedNewsletterArticles = new NewsletterArticlePaginationDto(await GetLatestArticles(newsletter.Id, pageNumber), slug);
         Newsletter = newsletter;
+
+        var isUserSubscribed = currentUser.IsAuthenticated && await newsletterSubscriptionQueries.IsUserSubscribed(currentUser.UserId!);
+        NewsletterSubscriptionButtons = NewsletterSubscriptionButtonsDto.Create(newsletter.Slug, isUserSubscribed);
         
         return Page();
     }
 
     public async Task<IActionResult> OnGetPaginationAsync(string? newsletterSlug, int pageNumber = 1)
     {
-        
         if (newsletterSlug is null)
             return Content("<div class='alert alert-danger'>Forbidden</div>", "text/html");
         
@@ -59,9 +67,32 @@ public class Details(INewsletterQueries newsletterQueries,
     public IActionResult OnPostSubscribe(string newsletterSlug)
     {
         if (!currentUser.IsAuthenticated)
-            return Partial("Shared/_SubscribeUnauthenticatedError");
+        {
+            return Partial("Shared/_SubscribeUnauthenticatedError",
+                NewsletterSubscriptionButtonsDto.Failure(newsletterSlug));
+        }
         
-        return Partial("Shared/_SubscribeSuccess", true); 
+        return Partial("Shared/_NewsletterSubscriptionButtons", true);
+    }
+    
+    public async Task<IActionResult> OnPostSubscribeGuestAsync(string newsletterSlug, [EmailAddress] string email)
+    {
+        if (currentUser.IsAuthenticated)
+        {
+            return Partial("Shared/_NewsletterSubscriptionButtons",
+                NewsletterSubscriptionButtonsDto.Failure(newsletterSlug));
+        }
+        
+        var newsletterId =  await newsletterQueries.GetNewsletterIdBySlug(newsletterSlug);
+        var result = await newsletterSubscriptionCommands.SubscribeGuest(newsletterId!.Value, email);
+        if (result.IsSuccess)
+        {
+            return Partial("Shared/_NewsletterSubscriptionButtons",
+                NewsletterSubscriptionButtonsDto.Success(newsletterSlug));    
+        }
+        
+        return Partial("Shared/_NewsletterSubscriptionButtons",
+            NewsletterSubscriptionButtonsDto.Failure(newsletterSlug));    
     }
 
     private Task<ListPagination<ListArticlePreviewDto>> GetLatestArticles(Guid newsletterId, int page = 1)
@@ -73,4 +104,30 @@ public class Details(INewsletterQueries newsletterQueries,
 public record NewsletterArticlePaginationDto(ListPagination<ListArticlePreviewDto> Pagination, string NewsletterSlug)
 {
     public bool PageHasArticles => Pagination.Data.Count > 0;
+}
+
+public class NewsletterSubscriptionButtonsDto
+{
+    public string NewsletterSlug { get; private init; }
+    public bool IsSubscribed { get; private init; }
+    public bool? SuccessResult { get; private set; }
+
+    private NewsletterSubscriptionButtonsDto(string newsletterSlug, bool isSubscribed, bool? successResult = null)
+    {
+        NewsletterSlug = newsletterSlug;
+        IsSubscribed = isSubscribed;
+        SuccessResult = successResult;
+    }
+    
+    public static NewsletterSubscriptionButtonsDto Create(string newsletterSlug, bool isSubscribed)
+        => new NewsletterSubscriptionButtonsDto(newsletterSlug, isSubscribed);
+    
+    public static NewsletterSubscriptionButtonsDto AlreadySubscribed(string newsletterSlug)
+        => new NewsletterSubscriptionButtonsDto(newsletterSlug, true);
+    
+    public static NewsletterSubscriptionButtonsDto Success(string newsletterSlug)
+        => new NewsletterSubscriptionButtonsDto(newsletterSlug, true, true);
+    
+    public static NewsletterSubscriptionButtonsDto Failure(string newsletterSlug, bool isSubscribed = false)
+        => new NewsletterSubscriptionButtonsDto(newsletterSlug, isSubscribed, true);
 }
