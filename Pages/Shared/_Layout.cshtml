@@ -3,6 +3,7 @@
 @{
     var newsletterSlug = ViewContext.RouteData.Values["newsletterSlug"]?.ToString();
     var articleSlug = ViewContext.RouteData.Values["articleSlug"]?.ToString();
+    var isArticlePage = !string.IsNullOrEmpty(articleSlug);
 }
 
 <!DOCTYPE html>
@@ -17,7 +18,7 @@
     <link rel="stylesheet" href="~/LittleFeed.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
+<body class="@(isArticlePage ? "page-article" : "")">
     <section class="bg-secondary px-3 py-1 text-white d-none d-md-block">
         <div class="row">
             <div class="col-12 col-md-6">
@@ -51,7 +52,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Index">Featured</a>
+                            <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Featured">Featured</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark text-decoration-hover" asp-area="" asp-page="/Index">Newsletters</a>

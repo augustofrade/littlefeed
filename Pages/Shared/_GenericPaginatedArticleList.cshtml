@@ -1,23 +1,22 @@
-@model LittleFeed.Dto.Pagination.NewsletterArticlePaginationDto<Dto.Articles.ListArticlePreviewDto>;
+@model LittleFeed.Dto.Pagination.ListPagination<Dto.Articles.ListArticleDto>;
 
 @{
-    var pageNumber = Model.Pagination.Page;
-    var newsletterSlug = Model.NewsletterSlug;
+    var pageNumber = Model.Page;
 }
 
 <div class="mb-3 pb-3 border-bottom">
-    @foreach (var article in Model.Pagination.Data)
+    @foreach (var article in Model.Data)
     {
-        @(await Html.PartialAsync("Shared/_ListArticlePreviewItem", article))
+        @(await Html.PartialAsync("Shared/_ListArticleItem", article))
     }
 </div>
 
 <div class="row">
     <div class="col-12 col-md-6">
-        @if (Model.Pagination.Page > 1)
+        @if (Model.Page > 1)
         {
             <button class="btn btn-light fw-bold"
-                    hx-get="?handler=Pagination&pageNumber=@(pageNumber - 1)&newsletterSlug=@newsletterSlug"
+                    hx-get="?handler=Pagination&pageNumber=@(pageNumber - 1)"
                     hx-swap="innerHTML"
                     hx-target="#article-list">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
@@ -29,10 +28,10 @@
         }
     </div>
     <div class="col-12 col-md-6 text-md-end">
-        @if (Model.Pagination.HasNextPage)
+        @if (Model.HasNextPage)
         {
             <button class="btn btn-light fw-bold"
-                    hx-get="?handler=Pagination&pageNumber=@(pageNumber + 1)&newsletterSlug=@newsletterSlug"
+                    hx-get="?handler=Pagination&pageNumber=@(pageNumber + 1)"
                     hx-swap="innerHTML"
                     hx-target="#article-list">
                 More

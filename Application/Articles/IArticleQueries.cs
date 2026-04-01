@@ -1,6 +1,6 @@
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Articles;
-using LittleFeed.Dto.Common;
+using LittleFeed.Dto.Pagination;
 
 namespace LittleFeed.Application.Articles;
 

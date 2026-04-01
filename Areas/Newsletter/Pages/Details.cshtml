@@ -35,9 +35,9 @@
 <section class="articles">
     <h3 class="mb-3">Articles</h3>
     <div id="article-list">
-        @if (Model.PublishedNewsletterArticles.PageHasArticles)
+        @if (Model.PublishedNewsletter.PageHasData)
         {
-            @(await Html.PartialAsync("Shared/_NewsletterPaginatedArticleList", Model.PublishedNewsletterArticles))
+            @(await Html.PartialAsync("Shared/_NewsletterPaginatedArticleList", Model.PublishedNewsletter))
         }
         else
         {

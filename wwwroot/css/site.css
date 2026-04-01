@@ -38,3 +38,9 @@ html, body {
   text-decoration: underline;
   text-decoration-style: dashed;
 }
+
+@media (min-width: 1200px) {
+  body.page-article > .container {
+    max-width: 900px !important;
+  }
+}

@@ -4,8 +4,8 @@ using LittleFeed.Common.Results;
 using LittleFeed.Domain;
 using LittleFeed.Domain.Newsletters;
 using LittleFeed.Dto.Articles;
-using LittleFeed.Dto.Common;
 using LittleFeed.Dto.Newsletters;
+using LittleFeed.Dto.Pagination;
 using LittleFeed.Dto.Reader;
 using Microsoft.EntityFrameworkCore;
 

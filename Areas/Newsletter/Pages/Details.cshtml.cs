@@ -3,8 +3,8 @@ using LittleFeed.Application.Articles;
 using LittleFeed.Application.Newsletters;
 using LittleFeed.Common;
 using LittleFeed.Dto.Articles;
-using LittleFeed.Dto.Common;
 using LittleFeed.Dto.Newsletters;
+using LittleFeed.Dto.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -20,9 +20,9 @@ public class Details(INewsletterQueries newsletterQueries,
     public required NewsletterDto Newsletter { get; set; }
     
     public required NewsletterSubscriptionButtonsDto NewsletterSubscriptionButtons { get; set; } 
-        
-    public NewsletterArticlePaginationDto PublishedNewsletterArticles { get;  private set; }
-    private const int PageSize = 2;
+    
+    public NewsletterArticlePaginationDto<ListArticlePreviewDto> PublishedNewsletter { get;  private set; }
+    private const int PageSize = 10;
 
     public async Task<IActionResult> OnGetAsync(string? slug, int pageNumber = 1)
     {
@@ -39,8 +39,9 @@ public class Details(INewsletterQueries newsletterQueries,
             logger.LogWarning("Article page accessed with invalid slug");
             return RedirectToPage("NotFound");
         }
-        
-        PublishedNewsletterArticles = new NewsletterArticlePaginationDto(await GetLatestArticles(newsletter.Id, pageNumber), slug);
+
+        var articles = await GetLatestArticles(newsletter.Id, pageNumber);
+        PublishedNewsletter = new NewsletterArticlePaginationDto<ListArticlePreviewDto>(articles, slug);
         Newsletter = newsletter;
 
         var isUserSubscribed = currentUser.IsAuthenticated && await newsletterSubscriptionQueries.IsUserSubscribed(currentUser.UserId!);
@@ -59,7 +60,7 @@ public class Details(INewsletterQueries newsletterQueries,
             return Content("<div class='alert alert-danger'>Forbidden</div>", "text/html");
         
         var pagination = await GetLatestArticles(newsletter.Id, pageNumber);
-        var dto = new NewsletterArticlePaginationDto(pagination, newsletterSlug);
+        var dto = new NewsletterArticlePaginationDto<ListArticlePreviewDto>(pagination, newsletterSlug);
         
         return Partial("Shared/_NewsletterPaginatedArticleList", dto);
     }
@@ -99,11 +100,6 @@ public class Details(INewsletterQueries newsletterQueries,
     {
         return articleQueries.GetLatestPublishedArticlesFromNewsletterAsync(newsletterId, PageSize, page);
     }
-}
-
-public record NewsletterArticlePaginationDto(ListPagination<ListArticlePreviewDto> Pagination, string NewsletterSlug)
-{
-    public bool PageHasArticles => Pagination.Data.Count > 0;
 }
 
 public class NewsletterSubscriptionButtonsDto
