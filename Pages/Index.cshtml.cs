@@ -13,7 +13,7 @@ public class Index(INewsletterQueries newsletterQueries, IArticleQueries article
     
     public async Task OnGetAsync()
     {
-        NewsletterList = await newsletterQueries.GetNewsletters();
+        NewsletterList = await newsletterQueries.GetNewsletters(10);
         var pagination = await articleQueries.GetLatestPublishedArticlesAsync(10);
         ArticleList = pagination.Data;
     }

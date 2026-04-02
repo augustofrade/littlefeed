@@ -11,19 +11,27 @@ namespace LittleFeed.Services;
 public class NewsletterService(ApplicationDbContext dbContext,
     ILogger<NewsletterService> logger) : INewsletterQueries, INewsletterCommands, INewsletterAccess
 {
-    public Task<List<ListNewsletterDto>> GetNewsletters()
+    public Task<List<ListNewsletterDto>> GetNewsletters(int? amount = null)
     {
         logger.LogInformation("Listing newsletters");
-        return dbContext.Newsletters
-            .Select(n => new ListNewsletterDto(
-                n.Name,
-                n.Slug,
-                n.Description,
-                n.CreatedAt,
-                dbContext.UserProfiles
-                    .Where(up => up.UserId == n.OwnerId)
-                    .Select(up => new UserIdentificationDto(up.DisplayName, up.Slug))
-                    .First()))
+
+        var query = dbContext.Newsletters
+            .AsQueryable();
+
+        if (amount != null)
+            query = query.Take(amount.Value).OrderByDescending(n => n.CreatedAt);
+        else
+            query = query.OrderBy(n => n.Name);
+        
+        return query.Select(n => new ListNewsletterDto(
+            n.Name,
+            n.Slug,
+            n.Description,
+            n.CreatedAt,
+            dbContext.UserProfiles
+                .Where(up => up.UserId == n.OwnerId)
+                .Select(up => new UserIdentificationDto(up.DisplayName, up.Slug))
+                .First()))
             .ToListAsync();
     }
 

@@ -4,7 +4,7 @@ namespace LittleFeed.Application.Newsletters;
 
 public interface INewsletterQueries
 {
-    Task<List<ListNewsletterDto>> GetNewsletters();
+    Task<List<ListNewsletterDto>> GetNewsletters(int? amount = null);
     Task<List<ListOwnedNewsletterDto>> GetNewslettersUserCanEdit(string userId);
     Task<NewsletterDto?> GetNewsletterBySlug(string slug);
     Task<string?> GetNewsletterSlug(Guid id);
