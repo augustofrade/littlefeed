@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
     public required DbSet<UserProfile> UserProfiles { get; set; }
     public required DbSet<NewsletterMember> NewsletterMembers { get; set; }
     public required DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
+    public required DbSet<ArticleComment> ArticleComments { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
@@ -126,6 +127,38 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
                 .WithMany()
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ArticleComment>(b =>
+        {
+            b.HasKey(c => c.Id);
+            
+            b.Property(c => c.Comment)
+                .HasMaxLength(4000)
+                .IsRequired();
+            
+            b.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(c => c.OwnerId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            b.HasOne<UserProfile>(ac => ac.OwnerProfile)
+                .WithMany(c => c.Comments)
+                .HasForeignKey(c => c.OwnerProfileId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            b.HasOne<Article>(ac => ac.Article)
+                .WithMany(a => a.Comments)
+                .HasForeignKey(a => a.ArticleId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            b.HasMany<ArticleComment>(ac => ac.ChildComments)
+                .WithOne(ac => ac.ParentComment)
+                .HasForeignKey(ac => ac.ParentCommentId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
     }
 

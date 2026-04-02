@@ -13,6 +13,7 @@ public class Article : Entity
     public DateTime? PublishDate { get; private set; }
     public Guid NewsletterId { get; private set; }
     public Newsletter Newsletter { get; private set; }
+    public ICollection<ArticleComment> Comments { get; init; } = [];
 
     private Article() { }
 
