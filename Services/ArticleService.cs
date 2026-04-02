@@ -25,9 +25,7 @@ public class ArticleService(ApplicationDbContext dbContext,
                 Title =  a.Title,
                 Slug =   a.Slug,
                 PublishDate =  a.PublishDate!.Value,
-                NewsletterSlug = a.Newsletter.Slug,
-                NewsletterName = a.Newsletter.Name,
-                NewsletterId = a.NewsletterId
+                Newsletter = new NewsletterIdentificationDto(a.Newsletter.Name, a.Newsletter.Slug),
             })
             .ToListAsync();
         

@@ -4,7 +4,7 @@
     var publishDateTime = Model.PublishDate.ToLocalTime().ToString("MMM dd, yyyy 'at' HH:mm");
 }
 
-<a asp-area="Newsletter" asp-page="/Articles/Index" asp-route-newsletterSlug="@Model.NewsletterSlug" asp-route-articleSlug="@Model.Slug"
+<a asp-area="Newsletter" asp-page="/Articles/Index" asp-route-newsletterSlug="@Model.Newsletter.Slug" asp-route-articleSlug="@Model.Slug"
    class="text-decoration-none">
     <article class="px-4 py-2 rounded-2 clickable-list-item">
         <div class="d-flex align-items-md-center gap-md-4 flex-column flex-md-row mb-1 mb-md-0">
@@ -13,7 +13,7 @@
         </div>
         <span class="badge bg-secondary-subtle text-dark">Technology</span>
         <span class="text-dark">
-            @Model.NewsletterName
+            @Model.Newsletter.Name
         </span>
         
     </article>
